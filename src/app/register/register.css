@@ -1,6 +1,5 @@
 body {
-  /* background:  url('./sc') no-repeat center center fixed; */
-  background-size: contain;
+  background: #f4f6fa;
   min-height: 100vh;
 }
 
@@ -34,19 +33,19 @@ form {
   align-items: center;
 }
 
+.input-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 label {
   font-weight: bold;
   color: #395061;
   margin-bottom: 0.3rem;
   font-size: 1rem;
   letter-spacing: 1px;
-}
-
-.input-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 input {
@@ -97,17 +96,25 @@ button[type="submit"]:hover {
   box-sizing: border-box;
 }
 
-/* Responsive for mobile */
+.success {
+  color: #388e3c;
+  background: #e8f5e9;
+  border-radius: 4px;
+  padding: 0.5rem;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  width: 90%;
+  box-sizing: border-box;
+}
+
 @media (max-width: 500px) {
   .login-container {
     max-width: 98vw;
     margin: 40px auto;
     padding: 1.5rem 0.5rem;
   }
-  input {
-    width: 100%;
-  }
-  .error {
+  input, .error, .success {
     width: 100%;
   }
 }

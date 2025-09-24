@@ -1,0 +1,13 @@
+.main-footer {
+  width: 100%;
+  background: #e3e7ed;
+  color: #4f6d7a;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1rem;
+  border-top: 1px solid #d1d5db;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+}

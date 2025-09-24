@@ -1,1 +1,54 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <aside class="dashboard-sidebar">
+    <button routerLink="/users"><span class="icon">👥</span> Active Users</button>
+    <button routerLink="/billing"><span class="icon">📦</span> Packages</button>
+    <button routerLink="/mikrotik"><span class="icon">🛠️</span> Mikrotik Reset</button>
+    <button routerLink="/mikrotik"><span class="icon">⚙️</span> Mikrotik Configuration</button>
+    <button routerLink="/sms"><span class="icon">📲</span> SMS Subscriptions</button>
+    <button routerLink="/performance"><span class="icon">📈</span> Performance Indexes</button>
+    <button routerLink="/login"><span class="icon">🚪</span> Logout</button>
+  </aside>
+  <header class="dashboard-header">
+    <div class="user-accounts">
+      <span class="icon">👤</span> Admin Account
+    </div>
+  </header>
+  <main class="dashboard-main">
+    <section class="performance-section">
+      <h1>Performance Overview</h1>
+      <div class="performance-widgets">
+        <div class="widget">
+          <h2>Amount Earned (This Month)</h2>
+          <p>$12,500</p>
+          <div class="graphic-bar"><!-- Placeholder for chart --></div>
+        </div>
+        <div class="widget">
+          <h2>Active Subscriptions</h2>
+          <p>320</p>
+        </div>
+        <div class="widget">
+          <h2>SMS Sent</h2>
+          <p>1,200</p>
+        </div>
+        <div class="widget">
+          <h2>Network Devices Online</h2>
+          <p>15</p>
+        </div>
+      </div>
+    </section>
+    <section class="dashboard-widgets">
+      <div class="widget">
+        <h2>Packages</h2>
+        <p><!-- Display package info here --></p>
+      </div>
+      <div class="widget">
+        <h2>Mikrotik Reset & Configuration</h2>
+        <p><!-- Display Mikrotik actions here --></p>
+      </div>
+      <div class="widget">
+        <h2>SMS Subscriptions</h2>
+        <p><!-- Display SMS subscription info here --></p>
+      </div>
+    </section>
+  </main>
+</div>
