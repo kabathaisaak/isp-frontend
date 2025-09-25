@@ -40,4 +40,8 @@
     <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
     <div *ngIf="successMsg" class="success">{{ successMsg }}</div>
   </form>
+    <div class="redirect-login">
+    <p>Already have an account?</p>
+    <button (click)="goToLogin()">Login</button>
+  </div>
 </div>

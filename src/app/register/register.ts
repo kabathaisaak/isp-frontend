@@ -53,4 +53,7 @@ export class Register {
       }
     });
   }
+  goToLogin() {
+  this.router.navigate(['/login']);
+}
 }
