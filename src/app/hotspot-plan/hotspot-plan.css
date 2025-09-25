@@ -1,0 +1,190 @@
+/* hotspot-plan.component.css */
+
+.container {
+  padding: 1.25rem;
+  box-sizing: border-box;
+  color: #0f172a;
+  font-family: Arial, sans-serif;
+}
+
+/* Header + action */
+.container > h2 {
+  margin: 0 0 1rem 0;
+  color: #334155;
+  font-size: 1.5rem;
+  letter-spacing: 0.2px;
+}
+
+.btn {
+  background: linear-gradient(90deg, #4f6d7a 70%, #395061 100%);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(79,109,122,0.08);
+}
+.btn.small { padding: 0.35rem 0.6rem; font-size: 0.85rem; }
+.btn.success { background: linear-gradient(90deg,#16a34a,#13803d); }
+.btn.secondary { background: #64748b; color: #fff; }
+
+/* Create form card */
+.form-container,
+.card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  margin-top: 1rem;
+  box-sizing: border-box;
+}
+
+.form-container h3,
+.card h3 {
+  margin-top: 0;
+  color: #1f2937;
+}
+
+.form-container input[type="text"],
+.form-container input[type="number"],
+.form-container input[type="date"],
+.form-container textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e6edf3;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+.form-container label {
+  display: block;
+  margin-top: 0.5rem;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+/* Plans list */
+.list-section {
+  margin-top: 1.25rem;
+}
+
+.plans-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+}
+
+.plans-table th,
+.plans-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.plans-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #334155;
+}
+
+.plan-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #0f172a;
+  background: #eef2ff;
+}
+
+.badge.online { background: #dcfce7; color: #166534; }
+.badge.offline { background: #fff7ed; color: #92400e; }
+
+/* Input + action cell */
+.recharge-cell {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.recharge-cell input[type="number"] {
+  width: 90px;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e6edf3;
+}
+
+/* Empty and loading states */
+.loading,
+.empty,
+.error {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+.error { color: #b91c1c; }
+
+/* Small screens */
+@media (max-width: 900px) {
+  .form-container,
+  .card {
+    width: 100%;
+  }
+
+  .plans-table th,
+  .plans-table td {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .recharge-cell input[type="number"] {
+    width: 70px;
+  }
+}
+
+/* Very small screens: stack plan info */
+@media (max-width: 600px) {
+  .plans-table thead { display: none; }
+  .plans-table, .plans-table tbody, .plans-table tr, .plans-table td {
+    display: block;
+    width: 100%;
+  }
+  .plans-table tr {
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(2,6,23,0.03);
+    padding: 0.6rem;
+  }
+  .plans-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+  .plans-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    width: calc(50% - 24px);
+    font-weight: 600;
+    color: #475569;
+    text-align: left;
+  }
+
+  .recharge-cell { justify-content: flex-end; }
+}

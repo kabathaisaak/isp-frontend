@@ -40,9 +40,6 @@ export interface HotspotPlan {
   providedIn: 'root'
 })
 export class ApiService {
-  getCustomers() {
-    throw new Error('Method not implemented.');
-  }
   private BASE_URL = 'http://127.0.0.1:8000/';
 
   constructor(private http: HttpClient) {}
@@ -61,17 +58,14 @@ export class ApiService {
   // ============================
   // CUSTOMERS
   // ============================
-  /** Get all active customers */
   getActiveCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(`${this.BASE_URL}api/customers/active/`);
   }
 
-  /** Get single customer with full details */
   getCustomerDetails(customerId: string): Observable<Customer> {
     return this.http.get<Customer>(`${this.BASE_URL}api/customers/${customerId}/`);
   }
 
-  /** Fetch session details of a customer's device from Mikrotik */
   fetchDeviceSessionDetails(mikrotikId: string, customerIp: string) {
     return this.http.get(
       `${this.BASE_URL}api/mikrotiks/${mikrotikId}/session/?ip=${encodeURIComponent(customerIp)}`
@@ -81,12 +75,10 @@ export class ApiService {
   // ============================
   // VOUCHERS
   // ============================
-  /** Get vouchers that are close to expiry */
   getExpiringVouchers(): Observable<Voucher[]> {
     return this.http.get<Voucher[]>(`${this.BASE_URL}api/vouchers/expiring/`);
   }
 
-  /** Create a new voucher for a user */
   createVoucher(payload: { amount: number; expiry: string; userId?: string }): Observable<Voucher> {
     return this.http.post<Voucher>(`${this.BASE_URL}api/vouchers/`, payload);
   }
@@ -94,16 +86,29 @@ export class ApiService {
   // ============================
   // HOTSPOT PLANS
   // ============================
+  /** List all hotspot plans */
   getHotspotPlans(): Observable<HotspotPlan[]> {
     return this.http.get<HotspotPlan[]>(`${this.BASE_URL}api/hotspot-plans/`);
   }
 
+  /** Create a new hotspot plan */
   createHotspotPlan(plan: Partial<HotspotPlan>): Observable<HotspotPlan> {
     return this.http.post<HotspotPlan>(`${this.BASE_URL}api/hotspot-plans/`, plan);
   }
 
+  /** Recharge an existing hotspot plan */
   rechargePlan(planId: string, amount: number): Observable<any> {
     return this.http.post(`${this.BASE_URL}api/hotspot-plans/${planId}/recharge/`, { amount });
+  }
+
+  /** Create a trial user for a hotspot plan */
+  createTrialUser(planId: string, days: number): Observable<any> {
+    return this.http.post(`${this.BASE_URL}api/hotspot-plans/${planId}/trial/`, { days });
+  }
+
+  /** Toggle auto online/offline mode */
+  toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
+    return this.http.patch(`${this.BASE_URL}api/hotspot-plans/${planId}/auto-connect/`, { autoOn });
   }
 
   // ============================
@@ -120,15 +125,14 @@ export class ApiService {
   resetMikrotik(data: any): Observable<any> {
     return this.http.post(`${this.BASE_URL}api/mikrotik/reset/`, data);
   }
-  // Delete a mikrotik by id
-removeMikrotik(id: string): Observable<any> {
-  return this.http.delete(`${this.BASE_URL}api/mikrotiks/${id}/`);
-}
 
-// Test connection for a mikrotik (backend should attempt connection and return status)
-testMikrotik(id: string): Observable<{ ok: boolean; message?: string }> {
-  return this.http.get<{ ok: boolean; message?: string }>(`${this.BASE_URL}api/mikrotiks/${id}/test/`);
-}
+  removeMikrotik(id: string): Observable<any> {
+    return this.http.delete(`${this.BASE_URL}api/mikrotiks/${id}/`);
+  }
+
+  testMikrotik(id: string): Observable<{ ok: boolean; message?: string }> {
+    return this.http.get<{ ok: boolean; message?: string }>(`${this.BASE_URL}api/mikrotiks/${id}/test/`);
+  }
 
   // ============================
   // REPORTS

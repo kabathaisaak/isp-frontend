@@ -1,0 +1,41 @@
+<div class="container">
+  <h2>Hotspot Plans</h2>
+
+  <button (click)="isCreating = !isCreating" class="btn">
+    {{ isCreating ? 'Back to Plans' : 'Create New Plan' }}
+  </button>
+
+  <!-- Loading -->
+  <p *ngIf="loading">Loading plans...</p>
+
+  <!-- Plans list -->
+  <div *ngIf="!isCreating && !loading">
+    <ul>
+      <li *ngFor="let plan of plans" class="plan-item">
+        <strong>{{ plan.name }}</strong> - 
+        {{ plan.price }} KES / {{ plan.trialDays || 0 }} trial days
+        <span *ngIf="plan.autoOn">⚡ Auto On/Off Enabled</span>
+        <span *ngIf="plan.purchasersCount">👥 {{ plan.purchasersCount }} users</span>
+
+        <button class="btn small" (click)="recharge(plan)">Recharge</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Create plan form -->
+  <div *ngIf="isCreating" class="form-container">
+    <h3>Create New Plan</h3>
+    <form (ngSubmit)="createPlan()" #planForm="ngForm">
+      <input [(ngModel)]="newPlan.name" name="name" placeholder="Plan Name" required />
+      <input [(ngModel)]="newPlan.price" name="price" type="number" placeholder="Price (KES)" required />
+      <input [(ngModel)]="newPlan.trialDays" name="trialDays" type="number" placeholder="Trial Days" />
+
+      <label>
+        <input type="checkbox" [(ngModel)]="newPlan.autoOn" name="autoOn" />
+        Auto Online/Offline Connect
+      </label>
+
+      <button type="submit" class="btn success" [disabled]="planForm.invalid">Save Plan</button>
+    </form>
+  </div>
+</div>
