@@ -1,1 +1,38 @@
-<p>users works!</p>
+<div class="users-container">
+  <h2>Active Customers</h2>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">Loading customers...</div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- Customers Table -->
+  <table *ngIf="!loading && customers.length > 0" class="customers-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>IP Address</th>
+        <th>Plan</th>
+        <th>Mikrotik</th>
+        <th>Amount</th>
+        <th>Expiry</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let customer of customers">
+        <td>{{ customer.name || 'N/A' }}</td>
+        <td>{{ customer.ipAddress }}</td>
+        <td>{{ customer.plan }}</td>
+        <td>{{ customer.mikrotik }}</td>
+        <td>{{ customer.amount | currency:'ksh' }}</td>
+        <td>{{ customer.expiry | date:'medium' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && customers.length === 0" class="empty">
+    No active customers found.
+  </div>
+</div>

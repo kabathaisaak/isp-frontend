@@ -1,1 +1,70 @@
-<p>mikrotik works!</p>
+<div class="mikrotik-page">
+  <h2>Mikrotik Management</h2>
+
+  <div class="controls">
+    <div class="add-single card">
+      <h3>Add Mikrotik</h3>
+      <label>Host (IP or hostname)</label>
+      <input [(ngModel)]="form.host" placeholder="192.168.88.1" />
+      <label>Username</label>
+      <input [(ngModel)]="form.username" placeholder="admin" />
+      <label>Password</label>
+      <input type="password" [(ngModel)]="form.password" placeholder="password" />
+      <label>Port</label>
+      <input type="number" [(ngModel)]="form.port" />
+      <div class="actions">
+        <button (click)="addDevice()" class="btn">Add</button>
+      </div>
+    </div>
+
+    <div class="add-batch card">
+      <h3>Batch Add (one per line)</h3>
+      <p class="muted">Format: <code>host,username,password,port</code> — only host required. Example: <code>10.0.0.1,admin,pass,8728</code></p>
+      <textarea [(ngModel)]="batchInput" placeholder="Paste hosts, one per line"></textarea>
+      <div class="actions">
+        <button (click)="addBatch()" class="btn secondary">Add Batch</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-section">
+    <h3>Connected Mikrotiks</h3>
+
+    <div *ngIf="loading" class="loading">Loading devices...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <table *ngIf="!loading && devices.length > 0" class="mikrotik-table">
+      <thead>
+        <tr>
+          <th>Host</th>
+          <th>User</th>
+          <th>Port</th>
+          <th>Connected</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of devices">
+          <td>{{ d.host }}</td>
+          <td>{{ d.username || '-' }}</td>
+          <td>{{ d.port || 8728 }}</td>
+          <td>
+            <span class="badge" [class.online]="d.connected" [class.offline]="!d.connected">
+              {{ d.connected ? 'Online' : 'Unknown' }}
+            </span>
+          </td>
+          <td class="actions-col">
+            <button (click)="testDevice(d)" [disabled]="testing[d.id]" class="btn small">
+              {{ testing[d.id] ? 'Testing...' : 'Test' }}
+            </button>
+            <button (click)="removeDevice(d.id)" [disabled]="removing[d.id]" class="btn danger small">
+              {{ removing[d.id] ? 'Removing...' : 'Remove' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loading && devices.length === 0" class="empty">No Mikrotik devices connected.</div>
+  </div>
+</div>
