@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
 
-const BASE_URL = 'http://localhost:8000/api/auth/'; // adjust if needed
+const BASE_URL = 'http://localhost:8000/api/auth/'; 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const access = localStorage.getItem('access');
