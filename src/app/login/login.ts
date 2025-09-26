@@ -4,6 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../shared';
 
+interface LoginResponse {
+  message?: string;
+  error?: string;
+  user?: any;
+  access?: string;
+  refresh?: string;
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -20,10 +28,16 @@ export class LoginComponent {
 
   onLogin() {
     this.api.login(this.username, this.password).subscribe({
-      next: (res: { message?: string; error?: string; user?: any }) => {
-        if (res.user) {
+      next: (res: LoginResponse) => {
+        if (res.user && res.access && res.refresh) {
           console.log('User logged in:', res.user);
+
+          // ✅ Save JWT tokens
+          localStorage.setItem('access', res.access);
+          localStorage.setItem('refresh', res.refresh);
+
           this.errorMsg = '';
+
           // ✅ Redirect to dashboard
           this.router.navigate(['/dashboard']);
         } else if (res.error) {

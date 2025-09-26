@@ -86,30 +86,34 @@ export class ApiService {
   // ============================
   // HOTSPOT PLANS
   // ============================
-  /** List all hotspot plans */
-  getHotspotPlans(): Observable<HotspotPlan[]> {
-    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}api/hotspot-plans/`);
-  }
+
 
   /** Create a new hotspot plan */
-  createHotspotPlan(plan: Partial<HotspotPlan>): Observable<HotspotPlan> {
-    return this.http.post<HotspotPlan>(`${this.BASE_URL}api/hotspot-plans/`, plan);
-  }
+ /** List all hotspot plans */
+getHotspotPlans(): Observable<HotspotPlan[]> {
+  return this.http.get<HotspotPlan[]>(`${this.BASE_URL}api/packages/hotspot-plans/`);
+}
 
-  /** Recharge an existing hotspot plan */
-  rechargePlan(planId: string, amount: number): Observable<any> {
-    return this.http.post(`${this.BASE_URL}api/hotspot-plans/${planId}/recharge/`, { amount });
-  }
+/** Create a new hotspot plan */
+createHotspotPlan(plan: Partial<HotspotPlan>): Observable<HotspotPlan> {
+  return this.http.post<HotspotPlan>(`${this.BASE_URL}api/packages/hotspot-plans/`, plan);
+}
 
-  /** Create a trial user for a hotspot plan */
-  createTrialUser(planId: string, days: number): Observable<any> {
-    return this.http.post(`${this.BASE_URL}api/hotspot-plans/${planId}/trial/`, { days });
-  }
+/** Recharge an existing hotspot plan */
+rechargePlan(planId: string, amount: number): Observable<any> {
+  return this.http.post(`${this.BASE_URL}api/packages/hotspot-plans/${planId}/recharge/`, { amount });
+}
 
-  /** Toggle auto online/offline mode */
-  toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
-    return this.http.patch(`${this.BASE_URL}api/hotspot-plans/${planId}/auto-connect/`, { autoOn });
-  }
+/** Create a trial user for a hotspot plan */
+createTrialUser(planId: string, days: number): Observable<any> {
+  return this.http.post(`${this.BASE_URL}api/packages/hotspot-plans/${planId}/trial/`, { days });
+}
+
+/** Toggle auto online/offline mode */
+toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
+  return this.http.patch(`${this.BASE_URL}api/packages/hotspot-plans/${planId}/auto-connect/`, { autoOn });
+}
+
 
   // ============================
   // MIKROTIK MANAGEMENT
