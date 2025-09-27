@@ -1,13 +1,25 @@
-// src/app/auth-interceptor.ts
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
-const BASE_URL = 'http://localhost:8000/api/auth/'; 
+const BASE_URL = 'http://localhost:8000/api/auth/';
+
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const access = localStorage.getItem('access');
+  const platformId = inject(PLATFORM_ID);
+  const http = inject(HttpClient);
+
+  let access: string | null = null;
+  let refresh: string | null = null;
+
+  if (isPlatformBrowser(platformId)) {
+    access = localStorage.getItem('access');
+    refresh = localStorage.getItem('refresh');
+  }
+
+  // 🔑 Attach access token if available
   if (access) {
     req = req.clone({
       setHeaders: { Authorization: `Bearer ${access}` },
@@ -16,16 +28,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 401 && localStorage.getItem('refresh')) {
-        const http = inject(HttpClient);
-        const refresh = localStorage.getItem('refresh');
-
+      // 🔄 Try refreshing token if access is expired
+      if (err.status === 401 && refresh) {
         return http.post<{ access: string }>(`${BASE_URL}token/refresh/`, { refresh }).pipe(
           switchMap((res) => {
-            // Save the new access token
-            localStorage.setItem('access', res.access);
+            if (isPlatformBrowser(platformId)) {
+              localStorage.setItem('access', res.access);
+            }
 
-            // Retry original request with new token
             const newReq = req.clone({
               setHeaders: { Authorization: `Bearer ${res.access}` },
             });
@@ -33,9 +43,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           }),
           catchError((refreshErr) => {
             console.error('Refresh token failed', refreshErr);
-            localStorage.removeItem('access');
-            localStorage.removeItem('refresh');
-            // Here you could also redirect to login
+
+            if (isPlatformBrowser(platformId)) {
+              localStorage.removeItem('access');
+              localStorage.removeItem('refresh');
+            }
+
             return throwError(() => err);
           })
         );

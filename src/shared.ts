@@ -118,7 +118,10 @@ toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
   // ============================
   // MIKROTIK MANAGEMENT
   // ============================
-  listMikrotiks(): Observable<any[]> {
+ // ============================
+// MIKROTIK MANAGEMENT
+// ============================
+listMikrotiks(): Observable<any[]> {
     return this.http.get<any[]>(`${this.BASE_URL}api/mikrotiks/`);
   }
 
@@ -126,8 +129,8 @@ toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
     return this.http.post(`${this.BASE_URL}api/mikrotiks/`, payload);
   }
 
-  resetMikrotik(data: any): Observable<any> {
-    return this.http.post(`${this.BASE_URL}api/mikrotik/reset/`, data);
+  resetMikrotik(id: string): Observable<any> {
+    return this.http.post(`${this.BASE_URL}api/mikrotiks/${id}/reset/`, {});
   }
 
   removeMikrotik(id: string): Observable<any> {
@@ -135,8 +138,11 @@ toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
   }
 
   testMikrotik(id: string): Observable<{ ok: boolean; message?: string }> {
-    return this.http.get<{ ok: boolean; message?: string }>(`${this.BASE_URL}api/mikrotiks/${id}/test/`);
+    return this.http.get<{ ok: boolean; message?: string }>(
+      `${this.BASE_URL}api/mikrotiks/${id}/test/`
+    );
   }
+
 
   // ============================
   // REPORTS

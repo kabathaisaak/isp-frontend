@@ -2,6 +2,7 @@
   <h2>Mikrotik Management</h2>
 
   <div class="controls">
+    <!-- Single Add -->
     <div class="add-single card">
       <h3>Add Mikrotik</h3>
       <label>Host (IP or hostname)</label>
@@ -17,9 +18,13 @@
       </div>
     </div>
 
+    <!-- Batch Add -->
     <div class="add-batch card">
       <h3>Batch Add (one per line)</h3>
-      <p class="muted">Format: <code>host,username,password,port</code> — only host required. Example: <code>10.0.0.1,admin,pass,8728</code></p>
+      <p class="muted">
+        Format: <code>host,username,password,port</code> — only host required.
+        Example: <code>10.0.0.1,admin,pass,8728</code>
+      </p>
       <textarea [(ngModel)]="batchInput" placeholder="Paste hosts, one per line"></textarea>
       <div class="actions">
         <button (click)="addBatch()" class="btn secondary">Add Batch</button>
@@ -65,6 +70,8 @@
       </tbody>
     </table>
 
-    <div *ngIf="!loading && devices.length === 0" class="empty">No Mikrotik devices connected.</div>
+    <div *ngIf="!loading && devices.length === 0" class="empty">
+      No Mikrotik devices connected.
+    </div>
   </div>
 </div>
