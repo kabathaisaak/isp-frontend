@@ -1,25 +1,30 @@
 <div class="container">
   <h2>Hotspot Plans</h2>
 
-  <button (click)="isCreating = !isCreating" class="btn">
-    {{ isCreating ? 'Back to Plans' : 'Create New Plan' }}
-  </button>
-
   <!-- Loading -->
-  <p *ngIf="loading">Loading plans...</p>
+  <p *ngIf="loading" class="loading">Loading plans...</p>
 
-  <!-- Plans list -->
-  <div *ngIf="!isCreating && !loading">
-    <ul>
-      <li *ngFor="let plan of plans" class="plan-item">
-        <strong>{{ plan.name }}</strong> - 
-        {{ plan.price }} KES / {{ plan.trialDays || 0 }} trial days
-        <span *ngIf="plan.autoOn">⚡ Auto On/Off Enabled</span>
-        <span *ngIf="plan.purchasersCount">👥 {{ plan.purchasersCount }} users</span>
+  <!-- Plans list as flex boxes -->
+  <div *ngIf="!isCreating && !loading" class="plans-grid">
+    <div *ngFor="let plan of plans" class="plan-card">
+      <h3>{{ plan.name }}</h3>
+      <p><strong>{{ plan.price }}</strong> KES</p>
+      <p>{{ plan.trialDays || 0 }} trial days</p>
+      <p *ngIf="plan.autoOn" class="badge online">⚡ Auto On/Off Enabled</p>
+      <p *ngIf="plan.purchasersCount">👥 {{ plan.purchasersCount }} users</p>
 
-        <button class="btn small" (click)="recharge(plan)">Recharge</button>
-      </li>
-    </ul>
+      <button class="btn small" (click)="recharge(plan)">Recharge</button>
+    </div>
+  </div>
+
+  <!-- No plans -->
+  <div *ngIf="!isCreating && !loading && plans.length === 0" class="empty">
+    No plans found.
+  </div>
+
+  <!-- Button BELOW packages -->
+  <div *ngIf="!isCreating && !loading" class="create-btn-wrapper">
+    <button (click)="isCreating = true" class="btn success">+ Create New Plan</button>
   </div>
 
   <!-- Create plan form -->
@@ -35,7 +40,10 @@
         Auto Online/Offline Connect
       </label>
 
-      <button type="submit" class="btn success" [disabled]="planForm.invalid">Save Plan</button>
+      <div class="form-actions">
+        <button type="button" class="btn secondary" (click)="isCreating = false">Cancel</button>
+        <button type="submit" class="btn success" [disabled]="planForm.invalid">Save Plan</button>
+      </div>
     </form>
   </div>
 </div>
