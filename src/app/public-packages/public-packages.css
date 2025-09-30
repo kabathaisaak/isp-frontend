@@ -1,0 +1,58 @@
+/* Page wrapper with soft gradient */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(to right, #f1f5f9, #e2e8f0); /* light gray gradient */
+  font-family: 'Inter', sans-serif;
+}
+
+/* Packages container */
+.packages-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Package card (uniform color) */
+.package-card {
+  @apply border rounded-2xl shadow-lg p-6 flex flex-col items-center text-center 
+         transition-transform transform hover:scale-105 hover:shadow-2xl duration-300;
+  background: #ffffff; /* white background for all cards */
+  border-color: #cbd5e1; /* slate-300 border */
+}
+
+/* Package headings */
+.package-card h2 {
+  color: #1e293b; /* slate-800 */
+}
+
+.package-card p {
+  color: #475569; /* slate-600 */
+}
+
+/* Buy button with different color */
+.buy-btn {
+  @apply w-full text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md;
+  background: #10b981; /* emerald green */
+}
+
+.buy-btn:hover {
+  background: #059669; /* darker emerald */
+  transform: translateY(-2px);
+  @apply shadow-lg;
+}
+
+/* Connection code fade-in */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

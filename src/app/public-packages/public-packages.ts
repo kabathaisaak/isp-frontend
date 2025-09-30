@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, HotspotPlan } from '../../shared';
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-public-packages',
   standalone: true,
-  imports: [],
+  imports: [ CommonModule, FormsModule ],
   templateUrl: './public-packages.html',
   styleUrl: './public-packages.css'
 })

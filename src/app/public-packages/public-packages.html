@@ -1,19 +1,20 @@
-<div class="max-w-6xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6 text-center">Available Packages</h1>
+<div class="page-wrapper">
+  <h1 class="page-title">
+    🚀 Fastnet Connect – Available Packages
+  </h1>
 
-  <!-- Packages Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Packages Flexbox -->
+  <div class="packages-container">
     <div
       *ngFor="let plan of plans"
-      class="border rounded-2xl shadow-lg p-6 bg-white flex flex-col items-center text-center"
+      class="package-card"
     >
-      <h2 class="text-xl font-semibold mb-2">{{ plan.name }}</h2>
-      <p class="text-gray-600 mb-4">Speed: {{ plan.speed }} Mbps</p>
-      <p class="text-lg font-bold mb-4">{{ plan.price }} KES</p>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">{{ plan.name }}</h2>
+      <p class="text-lg text-slate-600 mb-4">{{ plan.price }} KES</p>
 
       <button
         (click)="purchase(plan.id)"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+        class="buy-btn"
       >
         Buy & Connect
       </button>
@@ -23,11 +24,11 @@
   <!-- Show connection code after purchase -->
   <div
     *ngIf="connectionCode"
-    class="mt-8 p-6 bg-green-100 border border-green-300 rounded-xl text-center"
+    class="mt-10 p-6 bg-green-50 border border-green-300 rounded-xl text-center shadow-md animate-fade-in"
   >
-    <p class="text-lg font-medium">
-      ✅ Your connection code: 
-      <span class="font-bold text-green-800">{{ connectionCode }}</span>
+    <p class="text-lg font-medium text-gray-700">
+      ✅ Your connection code:
+      <span class="font-bold text-green-700 text-xl">{{ connectionCode }}</span>
     </p>
   </div>
 </div>
