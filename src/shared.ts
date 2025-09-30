@@ -163,7 +163,7 @@ listMikrotiks(): Observable<any[]> {
   }
 
   getPerformance(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}performance/`);
+    return this.http.get(`${this.BASE_URL}/api/performance/`);
   }
 
   getSmsSubscriptions(): Observable<any> {
