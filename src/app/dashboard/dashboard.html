@@ -8,30 +8,38 @@
   <main class="dashboard-main">
     <section class="performance-section">
       <h1>Performance Overview</h1>
-      <div class="performance-widgets">
+
+      <div *ngIf="loading">Loading...</div>
+
+      <div class="performance-widgets" *ngIf="!loading">
         <div class="widget">
           <h2>💰 This Month Earnings</h2>
-          <p>$12,500</p>
+          <p>{{ performance.earnings | currency }}</p>
         </div>
+
         <div class="widget">
           <h2>✉️ SMS Top-Up</h2>
-          <p>3,000 Credits</p>
+          <p>{{ performance.smsCredits }} Credits</p>
         </div>
+
         <div class="widget">
           <h2>👥 Total Clients</h2>
-          <p>520</p>
+          <p>{{ performance.totalClients }}</p>
         </div>
+
         <div class="widget">
           <h2>🟢 Users Active</h2>
-          <p>245</p>
+          <p>{{ performance.activeUsers }}</p>
         </div>
+
         <div class="widget">
           <h2>📦 Total Packages</h2>
-          <p>12</p>
+          <p>{{ performance.totalPackages }}</p>
         </div>
+
         <div class="widget">
           <h2>🌐 PPPoE Management</h2>
-          <p><!-- PPPoE actions/stats here --></p>
+          <p>{{ performance.pppoeStatus }}</p>
         </div>
       </div>
     </section>
