@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,31 +6,44 @@ import { ApiService } from '../../shared';
 
 @Component({
   selector: 'app-register',
-  standalone: true,  // ✅ standalone
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './register.html',
   styleUrls: ['./register.css']
 })
-export class Register {
+export class Register implements OnInit {
   username = '';
-  email = '';
   password = '';
   successMsg = '';
   errorMsg = '';
+  adminExists = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
-  onRegister() {
-    console.log('Register button clicked!');
-    console.log('Username:', this.username, 'Email:', this.email, 'Password:', this.password);
+  ngOnInit() {
+    // ✅ Check from backend if admin already exists
+    this.api.checkAdminExists().subscribe({
+      next: (res) => {
+        this.adminExists = res.exists;
+        if (this.adminExists) {
+          // Redirect to packages page if admin already exists
+          this.router.navigate(['/packages']);
+        }
+      },
+      error: (err) => {
+        console.error('Error checking admin:', err);
+      }
+    });
+  }
 
-    // Basic client-side validation
-    if (!this.username || this.username.length < 3) {
-      this.errorMsg = 'Username must be at least 3 characters.';
+  onRegister() {
+    if (this.adminExists) {
+      this.errorMsg = 'An admin account already exists.';
       return;
     }
-    if (!this.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
-      this.errorMsg = 'Please enter a valid email address.';
+
+    if (!this.username || this.username.length < 3) {
+      this.errorMsg = 'Username must be at least 3 characters.';
       return;
     }
     if (!this.password || this.password.length < 6) {
@@ -40,11 +53,11 @@ export class Register {
 
     this.errorMsg = '';
 
-    // ✅ Send request to backend
-    this.api.register(this.username, this.email, this.password).subscribe({
+    // ✅ Register only admin (first-time setup)
+    this.api.registerAdmin(this.username, this.password).subscribe({
       next: () => {
-        this.successMsg = 'Registration successful! Redirecting to login...';
-        console.log('Registration successful');
+        this.successMsg = 'Admin account created! Redirecting to login...';
+        console.log('Admin registered');
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (err) => {
@@ -53,7 +66,8 @@ export class Register {
       }
     });
   }
+
   goToLogin() {
-  this.router.navigate(['/login']);
-}
+    this.router.navigate(['/login']);
+  }
 }

@@ -47,13 +47,24 @@ export class ApiService {
   // ============================
   // AUTH
   // ============================
-  register(username: string, email: string, password: string) {
-    return this.http.post(`${this.BASE_URL}api/auth/register/`, { username, email, password });
-  }
+  // ============================
+// AUTH
+// ============================
 
-  login(username: string, password: string) {
-    return this.http.post(`${this.BASE_URL}api/auth/login/`, { username, password });
-  }
+// ✅ Check if an admin already exists
+checkAdminExists(): Observable<{ exists: boolean }> {
+  return this.http.get<{ exists: boolean }>(`${this.BASE_URL}api/auth/check-admin/`);
+}
+
+// ✅ Register the first admin account (only if none exists)
+registerAdmin(username: string, password: string): Observable<any> {
+  return this.http.post(`${this.BASE_URL}api/auth/register-admin/`, { username, password });
+}
+
+login(username: string, password: string) {
+  return this.http.post(`${this.BASE_URL}api/auth/login/`, { username, password });
+}
+
 
   // ============================
   // CUSTOMERS
@@ -169,4 +180,15 @@ listMikrotiks(): Observable<any[]> {
   getSmsSubscriptions(): Observable<any> {
     return this.http.get(`${this.BASE_URL}sms/subscriptions/`);
   }
+
+  // ============================
+  // PUBLIC PLANS & PURCHASE
+  // ============================
+ getPublicPlans(): Observable<HotspotPlan[]> {
+  return this.http.get<HotspotPlan[]>(`${this.BASE_URL}api/packages/public-plans/`);
+}
+
+purchasePlan(planId: string, identifier: string): Observable<any> {
+  return this.http.post(`${this.BASE_URL}api/billing/public-purchase/`, { plan_id: planId, identifier });
+}
 }
