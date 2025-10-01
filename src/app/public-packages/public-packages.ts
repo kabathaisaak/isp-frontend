@@ -28,18 +28,24 @@ import { FormsModule } from '@angular/forms';
   }
 
   purchase(planId: string): void {
-    const identifier = this.getDeviceIdentifier();
+  const phoneNumber = prompt("Enter your M-Pesa phone number (format: 2547XXXXXXXX):");
 
-    this.api.purchasePlan(planId, identifier).subscribe({
-      next: (res) => {
-        this.connectionCode = res.connection_code;
-      },
-      error: (err) => {
-        console.error('Error purchasing plan', err);
-        alert('Failed to purchase plan. Please try again.');
-      },
-    });
+  if (!phoneNumber) {
+    alert("Phone number is required.");
+    return;
   }
+
+  this.api.mpesaStkPush(planId, phoneNumber).subscribe({
+    next: (res) => {
+      alert("Payment request sent! Check your phone to enter M-Pesa PIN.");
+    },
+    error: (err) => {
+      console.error("Error initiating payment", err);
+      alert("Failed to initiate M-Pesa payment. Please try again.");
+    }
+  });
+}
+
 
   // 🔹 Example way to get identifier (IP or random fallback)
   private getDeviceIdentifier(): string {

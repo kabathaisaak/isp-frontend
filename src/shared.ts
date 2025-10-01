@@ -188,4 +188,20 @@ listMikrotiks(): Observable<any[]> {
 purchasePlan(planId: string, identifier: string): Observable<any> {
   return this.http.post(`${this.BASE_URL}api/billing/public-purchase/`, { plan_id: planId, identifier });
 }
+
+
+// ============================
+// M-PESA PAYMENTS
+// ============================
+/**
+ * Initiates an M-Pesa STK Push request for the given plan & phone number
+ */
+mpesaStkPush(planId: string, phoneNumber: string): Observable<any> {
+  return this.http.post(`${this.BASE_URL}api/payments/stk-push/`, {
+    plan_id: planId,
+    phone: phoneNumber
+  });
+}
+
+
 }
