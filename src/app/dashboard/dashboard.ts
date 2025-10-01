@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../shared';
-import { CommonModule } from '@angular/common';
-import { NgIf } from '@angular/common';
-
+import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,10 +12,14 @@ import { NgIf } from '@angular/common';
 export class Dashboard implements OnInit {
   performance: any = {};
   loading = true;
+  username: string | null = null;  // ✅ add username field
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
+    // ✅ get username from localStorage
+    this.username = localStorage.getItem('username');
+
     this.apiService.getPerformance().subscribe({
       next: (data) => {
         this.performance = data;

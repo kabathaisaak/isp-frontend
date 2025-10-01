@@ -34,6 +34,8 @@ export class LoginComponent {
 
           // ✅ Save JWT tokens
           localStorage.setItem('access', res.access);
+          localStorage.setItem('username', res.user.username); // ✅ save username
+          localStorage.setItem('role', res.user.role); // optional: save role if needed
           localStorage.setItem('refresh', res.refresh);
 
           this.errorMsg = '';
