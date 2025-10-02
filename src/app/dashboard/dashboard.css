@@ -1,21 +1,22 @@
 body {
   overflow-x: hidden;
+  margin: 0;
+  font-family: Arial, sans-serif;
 }
 
 .dashboard-container {
   background: #f4f6fa;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
   display: flex;
   flex-direction: row;
-  width: 100%; /* prevent overflow */
+  width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
   justify-content: flex-start;
 }
 
 .dashboard-sidebar {
-  width: 100%; /* fixed sidebar width */
+  width: 100%;
   background: #e3e7ed;
   padding: 2rem 1rem;
   display: flex;
@@ -51,22 +52,24 @@ body {
 }
 
 .dashboard-header {
-  position: absolute;
-  right: 0;
+  position: fixed;
   top: 0;
-  width: calc(100% - 220px); /* match sidebar width */
+  left: 220px; /* match sidebar width */
+  right: 0;
   height: 60px;
-  background: transparent;
+  background: #1f2937; /* dark gray */
+  color: #fff;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* 👈 user left, logout right */
   align-items: center;
-  padding: 1rem 2rem;
-  z-index: 1;
+  padding: 0 1.5rem;
+  z-index: 10;
   box-sizing: border-box;
 }
 
 .user-accounts {
   background: #fff;
+  color: #333;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -76,11 +79,35 @@ body {
   font-weight: bold;
 }
 
+/* ✅ Logout Button */
+.logout-btn {
+  background: #e63946;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.logout-btn:hover {
+  background: #c53030;
+  transform: translateY(-2px);
+}
+
+.logout-btn:active {
+  background: #a51f1f;
+  transform: translateY(0);
+}
+
 .dashboard-main {
-  width: 100%; /* fixed dashboard width */
+  width: 100%;
   padding: 2rem;
   margin-left: 220px; /* match sidebar */
-  margin-top: 60px;
+  margin-top: 60px;  /* offset for fixed header */
   box-sizing: border-box;
 }
 
@@ -164,7 +191,7 @@ body {
   }
 
   .dashboard-main {
-    width: 100%; /* responsive on smaller screens */
+    width: 100%;
     margin-left: 0;
     padding: 1rem;
     margin-top: 70px;
@@ -172,10 +199,7 @@ body {
 
   .dashboard-header {
     width: 100%;
-    position: static;
-    padding: 0.5rem 1rem;
-    height: auto;
-    justify-content: flex-end;
+    left: 0;
   }
 
   .performance-widgets {

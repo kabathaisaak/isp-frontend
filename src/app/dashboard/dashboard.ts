@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../shared';
 import { CommonModule, NgIf } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,9 +13,9 @@ import { CommonModule, NgIf } from '@angular/common';
 export class Dashboard implements OnInit {
   performance: any = {};
   loading = true;
-  username: string | null = null;  // ✅ add username field
+  username: string | null = null;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit() {
     // ✅ get username from localStorage
@@ -30,5 +31,15 @@ export class Dashboard implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // ✅ Logout function
+  logout() {
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+
+    this.router.navigate(['/login']);
   }
 }
