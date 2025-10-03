@@ -74,12 +74,34 @@
              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
 
       <!-- Plan Price -->
-      <input [(ngModel)]="newPlan.price" name="price" type="number" placeholder="Price (KES)" required
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
+<div>
+  <label for="price" class="block text-gray-700 font-medium mb-1">Plan Price (KES)</label>
+  <input [(ngModel)]="newPlan.price" 
+         name="price" 
+         id="price"
+         type="number" 
+         placeholder="Enter price" 
+         required
+         class="w-full border border-gray-300 rounded-lg px-4 py-2 
+                focus:ring-2 focus:ring-indigo-500 
+                focus:border-indigo-500 outline-none transition 
+                placeholder-gray-400" />
+</div>
 
-      <!-- Trial Days -->
-      <input [(ngModel)]="newPlan.trialDays" name="trialDays" type="number" placeholder="Trial Days"
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
+<!-- Trial Days -->
+<div>
+  <label for="trialDays" class="block text-gray-700 font-medium mb-1">Trial Days</label>
+  <input [(ngModel)]="newPlan.trialDays" 
+         name="trialDays" 
+         id="trialDays"
+         type="number" 
+         placeholder="Enter trial days" 
+         class="w-full border border-gray-300 rounded-lg px-4 py-2 
+                focus:ring-2 focus:ring-indigo-500 
+                focus:border-indigo-500 outline-none transition 
+                placeholder-gray-400" />
+</div>
+
 
       <!-- Checkbox -->
       <label class="flex items-center space-x-2 text-gray-700">
