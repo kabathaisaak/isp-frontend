@@ -11,9 +11,25 @@
     <div *ngFor="let plan of plans" 
          class="bg-white border border-gray-200 rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition duration-300">
       
-      <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ plan.name }}</h3>
-      <p class="text-emerald-600 text-xl font-bold mb-2">{{ plan.price }} KES</p>
-      <p class="text-gray-500 text-sm mb-1">{{ plan.trialDays || 0 }} trial days</p>
+      <!-- Plan Name -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">
+        <span *ngIf="plan.name; else noName">{{ plan.name }}</span>
+        <ng-template #noName>
+          <span class="italic text-gray-500 bg-gray-100 px-3 py-1 rounded-md">Unnamed Plan</span>
+        </ng-template>
+      </h3>
+
+      <!-- Price -->
+      <p class="text-xl font-bold mb-2"
+         [ngClass]="plan.price ? 'text-emerald-600' : 'text-gray-400 bg-gray-100 px-3 py-1 rounded-md italic'">
+        {{ plan.price ? (plan.price + ' KES') : 'No Price Set' }}
+      </p>
+
+      <!-- Trial Days -->
+      <p class="text-sm mb-1"
+         [ngClass]="plan.trialDays ? 'text-gray-500' : 'text-gray-400 bg-gray-100 px-3 py-1 rounded-md italic'">
+        {{ plan.trialDays ? (plan.trialDays + ' trial days') : 'No Trial Days' }}
+      </p>
 
       <!-- Badges -->
       <p *ngIf="plan.autoOn" 
@@ -55,15 +71,15 @@
     <form (ngSubmit)="createPlan()" #planForm="ngForm" class="space-y-4">
       <!-- Plan Name -->
       <input [(ngModel)]="newPlan.name" name="name" placeholder="Plan Name" required
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
 
       <!-- Plan Price -->
       <input [(ngModel)]="newPlan.price" name="price" type="number" placeholder="Price (KES)" required
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
 
       <!-- Trial Days -->
       <input [(ngModel)]="newPlan.trialDays" name="trialDays" type="number" placeholder="Trial Days"
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
 
       <!-- Checkbox -->
       <label class="flex items-center space-x-2 text-gray-700">
