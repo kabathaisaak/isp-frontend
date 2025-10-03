@@ -36,36 +36,36 @@ export class Register implements OnInit {
     });
   }
 
-  onRegister() {
-    if (this.adminExists) {
-      this.errorMsg = 'An admin account already exists.';
-      return;
-    }
-
-    if (!this.username || this.username.length < 3) {
-      this.errorMsg = 'Username must be at least 3 characters.';
-      return;
-    }
-    if (!this.password || this.password.length < 6) {
-      this.errorMsg = 'Password must be at least 6 characters.';
-      return;
-    }
-
-    this.errorMsg = '';
-
-    // ✅ Register only admin (first-time setup)
-    this.api.registerAdmin(this.username, this.password).subscribe({
-      next: () => {
-        this.successMsg = 'Admin account created! Redirecting to login...';
-        console.log('Admin registered');
-        setTimeout(() => this.router.navigate(['/login']), 1500);
-      },
-      error: (err) => {
-        console.error('Registration error:', err);
-        this.errorMsg = err.error?.error || 'Registration failed';
-      }
-    });
+onRegister() {
+  if (this.adminExists) {
+    this.errorMsg = 'An admin account already exists.';
+    return;
   }
+
+  if (!this.username || this.username.length < 3) {
+    this.errorMsg = 'Username must be at least 3 characters.';
+    return;
+  }
+  if (!this.password || this.password.length < 6) {
+    this.errorMsg = 'Password must be at least 6 characters.';
+    return;
+  }
+
+  this.errorMsg = '';
+
+  this.api.registerAdmin(this.username, this.password).subscribe({
+    next: () => {
+      this.successMsg = 'Admin account created! Please complete your profile.';
+      console.log('Admin registered');
+      setTimeout(() => this.router.navigate(['/complete-profile']), 1500);
+    },
+    error: (err) => {
+      console.error('Registration error:', err);
+      this.errorMsg = err.error?.error || 'Registration failed';
+    }
+  });
+}
+
 
   goToLogin() {
     this.router.navigate(['/login']);

@@ -1,68 +1,101 @@
-<div class="mikrotik-page">
-  <h2>Mikrotik Management</h2>
+<div class="min-h-screen w-full bg-gray-100 p-6">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">⚙️ Mikrotik Management</h2>
 
-  <div class="controls">
+  <!-- Controls -->
+  <div class="grid md:grid-cols-2 gap-6 mb-10">
     <!-- Single Add -->
-    <div class="add-single card">
-      <h3>Add Mikrotik</h3>
-      <label>Host (IP or hostname)</label>
-      <input [(ngModel)]="form.host" placeholder="192.168.88.1" />
-      <label>Username</label>
-      <input [(ngModel)]="form.username" placeholder="admin" />
-      <label>Password</label>
-      <input type="password" [(ngModel)]="form.password" placeholder="password" />
-      <label>Port</label>
-      <input type="number" [(ngModel)]="form.port" />
-      <div class="actions">
-        <button (click)="addDevice()" class="btn">Add</button>
+    <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">➕ Add Mikrotik</h3>
+
+      <label class="block text-sm font-medium text-gray-600 mb-1">Host (IP or hostname)</label>
+      <input [(ngModel)]="form.host"
+             placeholder="192.168.88.1"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
+
+      <label class="block text-sm font-medium text-gray-600 mb-1">Username</label>
+      <input [(ngModel)]="form.username"
+             placeholder="admin"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
+
+      <label class="block text-sm font-medium text-gray-600 mb-1">Password</label>
+      <input type="password"
+             [(ngModel)]="form.password"
+             placeholder="password"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
+
+      <label class="block text-sm font-medium text-gray-600 mb-1">Port</label>
+      <input type="number"
+             [(ngModel)]="form.port"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
+
+      <div class="flex justify-end">
+        <button (click)="addDevice()"
+                class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
+          Add
+        </button>
       </div>
     </div>
 
     <!-- Batch Add -->
-    <div class="add-batch card">
-      <h3>Batch Add (one per line)</h3>
-      <p class="muted">
-        Format: <code>host,username,password,port</code> — only host required.
-        Example: <code>10.0.0.1,admin,pass,8728</code>
+    <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">📋 Batch Add</h3>
+      <p class="text-sm text-gray-500 mb-3">
+        Format: <code class="bg-gray-100 px-1 rounded">host,username,password,port</code> — only host required.<br />
+        Example: <code class="bg-gray-100 px-1 rounded">10.0.0.1,admin,pass,8728</code>
       </p>
-      <textarea [(ngModel)]="batchInput" placeholder="Paste hosts, one per line"></textarea>
-      <div class="actions">
-        <button (click)="addBatch()" class="btn secondary">Add Batch</button>
+
+      <textarea [(ngModel)]="batchInput"
+                placeholder="Paste hosts, one per line"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 h-28 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"></textarea>
+
+      <div class="flex justify-end">
+        <button (click)="addBatch()"
+                class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
+          Add Batch
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="list-section">
-    <h3>Connected Mikrotiks</h3>
+  <!-- List Section -->
+  <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-700 mb-4">📡 Connected Mikrotiks</h3>
 
-    <div *ngIf="loading" class="loading">Loading devices...</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
+    <div *ngIf="loading" class="text-indigo-500 font-medium">Loading devices...</div>
+    <div *ngIf="error" class="text-red-500 font-medium">{{ error }}</div>
 
-    <table *ngIf="!loading && devices.length > 0" class="mikrotik-table">
-      <thead>
+    <table *ngIf="!loading && devices.length > 0" class="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
+      <thead class="bg-gray-100 text-gray-700 font-semibold">
         <tr>
-          <th>Host</th>
-          <th>User</th>
-          <th>Port</th>
-          <th>Connected</th>
-          <th>Actions</th>
+          <th class="px-4 py-2 text-left">Host</th>
+          <th class="px-4 py-2 text-left">User</th>
+          <th class="px-4 py-2 text-left">Port</th>
+          <th class="px-4 py-2 text-left">Connected</th>
+          <th class="px-4 py-2 text-left">Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let d of devices">
-          <td>{{ d.host }}</td>
-          <td>{{ d.username || '-' }}</td>
-          <td>{{ d.port || 8728 }}</td>
-          <td>
-            <span class="badge" [class.online]="d.connected" [class.offline]="!d.connected">
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let d of devices" class="hover:bg-gray-50">
+          <td class="px-4 py-2">{{ d.host }}</td>
+          <td class="px-4 py-2">{{ d.username || '-' }}</td>
+          <td class="px-4 py-2">{{ d.port || 8728 }}</td>
+          <td class="px-4 py-2">
+            <span class="px-2 py-1 rounded text-xs font-semibold"
+                  [ngClass]="d.connected ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'">
               {{ d.connected ? 'Online' : 'Unknown' }}
             </span>
           </td>
-          <td class="actions-col">
-            <button (click)="testDevice(d)" [disabled]="testing[d.id]" class="btn small">
+          <td class="px-4 py-2 space-x-2">
+            <button (click)="testDevice(d)"
+                    [disabled]="testing[d.id]"
+                    class="px-3 py-1 rounded-lg text-white text-sm shadow-md transition"
+                    [ngClass]="testing[d.id] ? 'bg-gray-400' : 'bg-indigo-500 hover:bg-indigo-600'">
               {{ testing[d.id] ? 'Testing...' : 'Test' }}
             </button>
-            <button (click)="removeDevice(d.id)" [disabled]="removing[d.id]" class="btn danger small">
+            <button (click)="removeDevice(d.id)"
+                    [disabled]="removing[d.id]"
+                    class="px-3 py-1 rounded-lg text-white text-sm shadow-md transition"
+                    [ngClass]="removing[d.id] ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'">
               {{ removing[d.id] ? 'Removing...' : 'Remove' }}
             </button>
           </td>
@@ -70,7 +103,7 @@
       </tbody>
     </table>
 
-    <div *ngIf="!loading && devices.length === 0" class="empty">
+    <div *ngIf="!loading && devices.length === 0" class="text-gray-500 text-center py-4">
       No Mikrotik devices connected.
     </div>
   </div>

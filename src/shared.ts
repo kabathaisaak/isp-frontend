@@ -61,6 +61,11 @@ registerAdmin(username: string, password: string): Observable<any> {
   return this.http.post(`${this.BASE_URL}api/auth/register-admin/`, { username, password });
 }
 
+completeProfile(payload: FormData) {
+  return this.http.post(`${this.BASE_URL}api/auth/complete-profile/`, payload);
+}
+
+
 login(username: string, password: string) {
   return this.http.post(`${this.BASE_URL}api/auth/login/`, { username, password });
 }

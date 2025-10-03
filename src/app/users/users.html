@@ -1,38 +1,42 @@
-<div class="users-container">
-  <h2>Active Customers</h2>
+<div class="min-h-screen w-full bg-gray-100 p-6">
+  <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">👥 Active Customers</h2>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading">Loading customers...</div>
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-indigo-500 font-medium">Loading customers...</div>
 
-  <!-- Error -->
-  <div *ngIf="error" class="error">{{ error }}</div>
+    <!-- Error -->
+    <div *ngIf="error" class="text-red-500 font-medium">{{ error }}</div>
 
-  <!-- Customers Table -->
-  <table *ngIf="!loading && customers.length > 0" class="customers-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>IP Address</th>
-        <th>Plan</th>
-        <th>Mikrotik</th>
-        <th>Amount</th>
-        <th>Expiry</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let customer of customers">
-        <td>{{ customer.name || 'N/A' }}</td>
-        <td>{{ customer.ipAddress }}</td>
-        <td>{{ customer.plan }}</td>
-        <td>{{ customer.mikrotik }}</td>
-        <td>{{ customer.amount | currency:'ksh' }}</td>
-        <td>{{ customer.expiry | date:'medium' }}</td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- Customers Table -->
+    <table *ngIf="!loading && customers.length > 0" 
+           class="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
+      <thead class="bg-gray-100 text-gray-700 font-semibold">
+        <tr>
+          <th class="px-4 py-2 text-left">Name</th>
+          <th class="px-4 py-2 text-left">IP Address</th>
+          <th class="px-4 py-2 text-left">Plan</th>
+          <th class="px-4 py-2 text-left">Mikrotik</th>
+          <th class="px-4 py-2 text-left">Amount</th>
+          <th class="px-4 py-2 text-left">Expiry</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let customer of customers" class="hover:bg-gray-50">
+          <td class="px-4 py-2 font-medium text-gray-800">{{ customer.name || 'N/A' }}</td>
+          <td class="px-4 py-2 text-gray-600">{{ customer.ipAddress }}</td>
+          <td class="px-4 py-2 text-gray-600">{{ customer.plan }}</td>
+          <td class="px-4 py-2 text-gray-600">{{ customer.mikrotik }}</td>
+          <td class="px-4 py-2 font-semibold text-green-600">{{ customer.amount | currency:'Ksh ' }}</td>
+          <td class="px-4 py-2 text-gray-500">{{ customer.expiry | date:'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
 
-  <!-- Empty state -->
-  <div *ngIf="!loading && customers.length === 0" class="empty">
-    No active customers found.
+    <!-- Empty state -->
+    <div *ngIf="!loading && customers.length === 0" 
+         class="text-gray-500 text-center py-6 italic">
+      No active customers found.
+    </div>
   </div>
 </div>

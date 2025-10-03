@@ -1,0 +1,32 @@
+<!-- complete-profile.html -->
+<div class="profile-container">
+  <h2>Complete Your Profile</h2>
+  <form (ngSubmit)="submitProfile()" [formGroup]="profileForm">
+    <div>
+      <label>Company Name</label>
+      <input formControlName="company_name" required />
+    </div>
+
+    <div>
+      <label>KRA PIN</label>
+      <input formControlName="kra_pin" required />
+    </div>
+
+    <div>
+      <label>Phone</label>
+      <input formControlName="phone" required />
+    </div>
+
+    <div>
+      <label>Registration Certificate</label>
+      <input type="file" (change)="onFileChange($event, 'registration_cert')" />
+    </div>
+
+    <div>
+      <label>National ID</label>
+      <input type="file" (change)="onFileChange($event, 'national_id')" />
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+</div>
