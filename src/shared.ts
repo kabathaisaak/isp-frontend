@@ -74,9 +74,10 @@ login(username: string, password: string) {
   // ============================
   // CUSTOMERS
   // ============================
-  getActiveCustomers(): Observable<Customer[]> {
-    return this.http.get<Customer[]>(`${this.BASE_URL}api/customers/active/`);
-  }
+ getActiveCustomers(): Observable<Customer[]> {
+  return this.http.get<Customer[]>(`${this.BASE_URL}/api/billing/customers/active/`);
+}
+
 
   getCustomerDetails(customerId: string): Observable<Customer> {
     return this.http.get<Customer>(`${this.BASE_URL}api/customers/${customerId}/`);

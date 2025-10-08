@@ -52,4 +52,10 @@ export class LoginComponent {
       }
     });
   }
+   // ✅ Register method (navigates to registration page)
+  onRegister() {
+    this.router.navigate(['/register']);
+  }
+
+  
 }
