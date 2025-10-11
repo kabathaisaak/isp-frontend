@@ -1,42 +1,71 @@
 <div class="min-h-screen w-full bg-gray-100 p-6">
-  <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">👥 Active Customers</h2>
+  <div class="max-w-7xl mx-auto bg-white shadow-md rounded-xl p-6 border border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+      👥 {{ currentUser?.is_reseller ? 'My Customers' : 'All Users' }}
+    </h2>
 
     <!-- Loading -->
-    <div *ngIf="loading" class="text-indigo-500 font-medium">Loading customers...</div>
+    <div *ngIf="loading" class="text-indigo-500 font-medium">Loading data...</div>
 
     <!-- Error -->
     <div *ngIf="error" class="text-red-500 font-medium">{{ error }}</div>
 
-    <!-- Customers Table -->
-    <table *ngIf="!loading && customers.length > 0" 
-           class="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
+    <!-- Table -->
+    <table
+      *ngIf="!loading && users.length > 0"
+      class="w-full border border-gray-200 rounded-lg overflow-hidden text-sm"
+    >
       <thead class="bg-gray-100 text-gray-700 font-semibold">
         <tr>
-          <th class="px-4 py-2 text-left">Name</th>
-          <th class="px-4 py-2 text-left">IP Address</th>
-          <th class="px-4 py-2 text-left">Plan</th>
-          <th class="px-4 py-2 text-left">Mikrotik</th>
-          <th class="px-4 py-2 text-left">Amount</th>
-          <th class="px-4 py-2 text-left">Expiry</th>
+          <th class="px-4 py-2 text-left">Username</th>
+          <th class="px-4 py-2 text-left">Email</th>
+          <th class="px-4 py-2 text-left">Phone</th>
+          <th class="px-4 py-2 text-left" *ngIf="currentUser?.is_superuser">Role</th>
+          <th class="px-4 py-2 text-left" *ngIf="currentUser?.is_reseller">Address</th>
+          <th class="px-4 py-2 text-left">Joined</th>
         </tr>
       </thead>
+
       <tbody class="divide-y divide-gray-200">
-        <tr *ngFor="let customer of customers" class="hover:bg-gray-50">
-          <td class="px-4 py-2 font-medium text-gray-800">{{ customer.name || 'N/A' }}</td>
-          <td class="px-4 py-2 text-gray-600">{{ customer.ipAddress }}</td>
-          <td class="px-4 py-2 text-gray-600">{{ customer.plan }}</td>
-          <td class="px-4 py-2 text-gray-600">{{ customer.mikrotik }}</td>
-          <td class="px-4 py-2 font-semibold text-green-600">{{ customer.amount | currency:'Ksh ' }}</td>
-          <td class="px-4 py-2 text-gray-500">{{ customer.expiry | date:'medium' }}</td>
+        <tr *ngFor="let user of users" class="hover:bg-gray-50 transition">
+          <td class="px-4 py-2 font-medium text-gray-800">
+            {{ user.username || user.user?.username }}
+          </td>
+          <td class="px-4 py-2 text-gray-600">{{ user.email || user.user?.email }}</td>
+          <td class="px-4 py-2 text-gray-600">{{ user.phone || user.user?.phone }}</td>
+
+          <!-- Admin Role Display -->
+          <td *ngIf="currentUser?.is_superuser" class="px-4 py-2 text-gray-600">
+            <span
+              class="px-3 py-1 text-xs rounded-full font-medium"
+              [ngClass]="{
+                'bg-green-100 text-green-700': user.is_reseller,
+                'bg-blue-100 text-blue-700': user.is_customer,
+                'bg-gray-100 text-gray-600': !user.is_reseller && !user.is_customer
+              }"
+            >
+              {{ user.is_reseller ? 'Reseller' : user.is_customer ? 'Customer' : 'Admin' }}
+            </span>
+          </td>
+
+          <!-- Reseller Customers -->
+          <td *ngIf="currentUser?.is_reseller" class="px-4 py-2 text-gray-600">
+            {{ user.address || 'N/A' }}
+          </td>
+
+          <td class="px-4 py-2 text-gray-500">
+            {{ user.created_at | date: 'medium' }}
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Empty state -->
-    <div *ngIf="!loading && customers.length === 0" 
-         class="text-gray-500 text-center py-6 italic">
-      No active customers found.
+    <!-- Empty -->
+    <div
+      *ngIf="!loading && users.length === 0"
+      class="text-gray-500 text-center py-6 italic"
+    >
+      No users or customers found.
     </div>
   </div>
 </div>

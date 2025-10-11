@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../shared';
 
 interface MikrotikDevice {
-  id: string;   // now required
+  id: string;
   host: string;
   username?: string;
   password?: string;
@@ -16,7 +16,7 @@ interface MikrotikDevice {
   selector: 'app-mikrotik',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './mikrotik.html',
+   templateUrl: './mikrotik.html',
   styleUrls: ['./mikrotik.css']
 })
 export class MikrotikComponent implements OnInit {
@@ -29,6 +29,7 @@ export class MikrotikComponent implements OnInit {
 
   testing: Record<string, boolean> = {};
   removing: Record<string, boolean> = {};
+  resetting: Record<string, boolean> = {};
 
   constructor(private api: ApiService) {}
 
@@ -45,10 +46,9 @@ export class MikrotikComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to load mikrotiks', err);
         this.error = 'Failed to load Mikrotik devices.';
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -58,77 +58,55 @@ export class MikrotikComponent implements OnInit {
       return;
     }
 
-    const payload = {
-      host: this.form.host,
-      username: this.form.username,
-      password: this.form.password,
-      port: this.form.port || 8728,
-    };
-
-    this.api.addMikrotik(payload).subscribe({
+    this.api.addMikrotik(this.form).subscribe({
       next: () => {
         this.form = { id: '', host: '', username: '', password: '', port: 8728 };
         this.loadDevices();
       },
-      error: (err) => {
-        console.error('Add mikrotik failed', err);
-        this.error = 'Failed to add Mikrotik.';
-      }
+      error: () => (this.error = 'Failed to add Mikrotik.'),
     });
-  }
-
-  addBatch(): void {
-    const lines = this.batchInput.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    if (!lines.length) return;
-
-    for (const line of lines) {
-      const parts = line.split(',').map(p => p.trim());
-      const host = parts[0];
-      const username = parts[1] || 'admin';
-      const password = parts[2] || '';
-      const port = parts[3] ? Number(parts[3]) : 8728;
-
-      if (!host) continue;
-
-      this.api.addMikrotik({ host, username, password, port }).subscribe({
-        next: () => this.loadDevices(),
-        error: (err) => console.error('Batch add error for', host, err)
-      });
-    }
-
-    this.batchInput = '';
   }
 
   removeDevice(id: string): void {
     this.removing[id] = true;
-
     this.api.removeMikrotik(id).subscribe({
       next: () => {
         delete this.removing[id];
         this.loadDevices();
       },
-      error: (err) => {
-        console.error('Remove failed', err);
+      error: () => {
         delete this.removing[id];
         this.error = 'Failed to remove Mikrotik.';
-      }
+      },
     });
   }
 
   testDevice(device: MikrotikDevice): void {
     this.testing[device.id] = true;
-
     this.api.testMikrotik(device.id).subscribe({
       next: (res) => {
         this.testing[device.id] = false;
-        device.connected = !!res?.ok;
-        this.error = res?.ok ? null : (res.message || 'Test failed');
+        device.connected = !!res.ok;
+        this.error = res.ok ? null : res.message || 'Connection failed.';
+      },
+      error: () => {
+        this.testing[device.id] = false;
+        this.error = 'Failed to test connection.';
+      },
+    });
+  }
+
+  resetDevice(device: MikrotikDevice): void {
+    this.resetting[device.id] = true;
+    this.api.resetMikrotik(device.id).subscribe({
+      next: (res) => {
+        this.resetting[device.id] = false;
+        alert(res.message || 'Device reset successful.');
       },
       error: (err) => {
-        console.error('Test connection error', err);
-        this.testing[device.id] = false;
-        this.error = 'Failed to test connection';
-      }
+        this.resetting[device.id] = false;
+        alert('Reset failed: ' + err.message);
+      },
     });
   }
 }

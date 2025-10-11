@@ -11,11 +11,16 @@ export class AuthGuard implements CanActivate {
   canActivate(): boolean {
     if (isPlatformBrowser(this.platformId)) {
       const access = localStorage.getItem('access');
-      const username = localStorage.getItem('username'); // optiona
-      const role = localStorage.getItem('role'); // optional
+      const role = localStorage.getItem('role');
 
-      if (access /* && role === 'admin' */) {
-        return true; // ✅ allow if access token exists
+      if (access) {
+        // ✅ Role-based redirection
+        if (role === 'admin') {
+          this.router.navigate(['/admin/dashboard']);
+        } else if (role === 'subscriber') {
+          this.router.navigate(['/packages']);
+        }
+        return true;
       }
     }
 

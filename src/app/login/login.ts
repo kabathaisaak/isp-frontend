@@ -5,11 +5,15 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../shared';
 
 interface LoginResponse {
-  message?: string;
-  error?: string;
-  user?: any;
   access?: string;
   refresh?: string;
+  user?: {
+    id: number;
+    username: string;
+    role?: string; // e.g., "admin", "reseller", "subscriber"
+  };
+  message?: string;
+  error?: string;
 }
 
 @Component({
@@ -23,39 +27,54 @@ export class LoginComponent {
   username = '';
   password = '';
   errorMsg = '';
+  loading = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
   onLogin() {
+    if (!this.username || !this.password) return;
+    this.loading = true;
+
     this.api.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
-        if (res.user && res.access && res.refresh) {
-          console.log('User logged in:', res.user);
+        this.loading = false;
 
-          // ✅ Save JWT tokens
+        if (res.access && res.user) {
+          // ✅ Save tokens & user info in localStorage
           localStorage.setItem('access', res.access);
-          localStorage.setItem('username', res.user.username); // ✅ save username
-          localStorage.setItem('role', res.user.role); // optional: save role if needed
-          localStorage.setItem('refresh', res.refresh);
+          if (res.refresh) localStorage.setItem('refresh', res.refresh);
+          localStorage.setItem('username', res.user.username);
+          if (res.user.role) localStorage.setItem('role', res.user.role);
 
           this.errorMsg = '';
 
-          // ✅ Redirect to dashboard
-          this.router.navigate(['/dashboard']);
-        } else if (res.error) {
-          this.errorMsg = res.error;
+          // ✅ Redirect based on role
+          switch (res.user.role) {
+            case 'admin':
+              this.router.navigate(['/dashboard']);
+              break;
+            case 'reseller':
+              this.router.navigate(['/reseller-dashboard']);
+              break;
+            case 'subscriber':
+              this.router.navigate(['/packages']);
+              break;
+            default:
+              this.router.navigate(['/dashboard']);
+          }
+        } else {
+          this.errorMsg = res.error || 'Invalid login response';
         }
       },
       error: (err: any) => {
+        this.loading = false;
         console.error('Login failed:', err);
-        this.errorMsg = 'Invalid username or password';
+        this.errorMsg = 'Invalid username or password.';
       }
     });
   }
-   // ✅ Register method (navigates to registration page)
+
   onRegister() {
     this.router.navigate(['/register']);
   }
-
-  
 }

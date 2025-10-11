@@ -1,38 +1,218 @@
-<div class="login-container">
-  <h2>Register</h2>
-  <form (ngSubmit)="onRegister()" #registerForm="ngForm">
-    <div class="input-group">
-      <label for="username">Username</label>
-      <input
-        id="username"
-        name="username"
-        [(ngModel)]="username"
-        required
-        minlength="3"
-      />
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 transition-all duration-300">
+    
+    <!-- Progress Bar -->
+    <div class="flex items-center justify-center mb-6">
+      <div class="flex items-center w-full max-w-sm justify-between">
+        <div
+          class="h-2 w-1/2 rounded-full"
+          [class.bg-indigo-600]="step >= 1"
+          [class.bg-gray-200]="step < 1"
+        ></div>
+        <div
+          class="h-2 w-1/2 rounded-full"
+          [class.bg-indigo-600]="step >= 2"
+          [class.bg-gray-200]="step < 2"
+        ></div>
+      </div>
     </div>
 
+    <!-- Titles -->
+    <h2 *ngIf="step === 1" class="text-2xl font-bold text-center mb-6 text-gray-800">
+      Step 1: Create Admin Account
+    </h2>
+    <h2 *ngIf="step === 2" class="text-2xl font-bold text-center mb-6 text-gray-800">
+      Step 2: Complete Your Profile
+    </h2>
+    <h2 *ngIf="step === 3" class="text-2xl font-bold text-center mb-6 text-green-600">
+      🎉 Registration Successful
+    </h2>
 
+    <!-- Step 1 -->
+    <form *ngIf="step === 1" (ngSubmit)="onRegister()" #registerForm="ngForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+        <input
+          [(ngModel)]="username"
+          name="username"
+          required
+          minlength="3"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
 
-    <div class="input-group">
-      <label for="password">Password</label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        [(ngModel)]="password"
-        required
-        minlength="6"
-      />
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input
+          [(ngModel)]="password"
+          name="password"
+          type="password"
+          required
+          minlength="6"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div class="pt-4 flex justify-between items-center">
+        <button
+          type="submit"
+          [disabled]="loading || registerForm.invalid"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition disabled:opacity-50"
+        >
+          {{ loading ? 'Registering...' : 'Next →' }}
+        </button>
+
+        <button
+          type="button"
+          class="text-sm text-gray-600 hover:text-indigo-600 underline"
+          (click)="goToLogin()"
+        >
+          Already have an account?
+        </button>
+      </div>
+    </form>
+
+    <!-- Step 2: Profile Completion -->
+    <form *ngIf="step === 2" (ngSubmit)="onCompleteProfile()" #profileForm="ngForm" enctype="multipart/form-data" class="space-y-4">
+
+      <!-- Personal Info -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input
+            [(ngModel)]="fullName"
+            name="fullName"
+            required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input
+            [(ngModel)]="email"
+            name="email"
+            type="email"
+            required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input
+            [(ngModel)]="phone"
+            name="phone"
+            required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">KRA PIN</label>
+          <input
+            [(ngModel)]="kraPin"
+            name="kraPin"
+            required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
+      <!-- Business Info -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+        <input
+          [(ngModel)]="businessName"
+          name="businessName"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+        <input
+          [(ngModel)]="address"
+          name="address"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <!-- File Uploads -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Registration Certificate</label>
+          <input
+            type="file"
+            (change)="onFileSelected($event, 'registration_cert')"
+            class="w-full text-sm border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4
+                   file:rounded-md file:border-0 file:text-sm file:font-semibold
+                   file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">National ID</label>
+          <input
+            type="file"
+            (change)="onFileSelected($event, 'national_id')"
+            class="w-full text-sm border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4
+                   file:rounded-md file:border-0 file:text-sm file:font-semibold
+                   file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">KYC Documents (optional)</label>
+        <input
+          type="file"
+          multiple
+          (change)="onFileSelected($event, 'kyc_docs')"
+          class="w-full text-sm border border-gray-300 rounded-lg p-2 file:mr-4 file:py-2 file:px-4
+                 file:rounded-md file:border-0 file:text-sm file:font-semibold
+                 file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+        />
+      </div>
+
+      <!-- Buttons -->
+      <div class="pt-6 flex justify-between items-center">
+        <button
+          type="button"
+          (click)="goBack()"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-semibold transition"
+        >
+          ← Back
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="loading || profileForm.invalid"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition disabled:opacity-50"
+        >
+          {{ loading ? 'Saving...' : 'Complete Profile' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Step 3 -->
+    <div *ngIf="step === 3" class="text-center">
+      <div class="text-green-600 text-lg font-semibold mb-4">
+        {{ successMsg }}
+      </div>
+      <button
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+        (click)="router.navigate(['/dashboard'])"
+      >
+        Go to Dashboard
+      </button>
     </div>
 
-    <button type="submit" [disabled]="registerForm.invalid">Register</button>
-
-    <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
-    <div *ngIf="successMsg" class="success">{{ successMsg }}</div>
-  </form>
-    <div class="redirect-login">
-    <p>Already have an account?</p>
-    <button (click)="goToLogin()">Login</button>
+    <!-- Error Message -->
+    <div *ngIf="errorMsg" class="text-red-500 text-sm text-center mt-4 font-medium">
+      {{ errorMsg }}
+    </div>
   </div>
 </div>

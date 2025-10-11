@@ -8,17 +8,18 @@ import { Observable } from 'rxjs';
 export interface Customer {
   id: string;
   name?: string;
-  ipAddress: string;
+  ip_address: string;
   plan: string;
   mikrotik: string;
   amount: number;
   expiry: string;
+  is_active?: boolean;
 }
 
 export interface Voucher {
   id: string;
   code: string;
-  userId?: string;
+  user?: string;
   amount: number;
   expiry: string;
   used: boolean;
@@ -28,9 +29,9 @@ export interface HotspotPlan {
   id: string;
   name: string;
   price: number;
-  trialDays?: number;
-  autoOn?: boolean;
-  purchasersCount?: number;
+  trial_days?: number;
+  auto_on?: boolean;
+  purchasers_count?: number;
 }
 
 // ============================
@@ -40,174 +41,135 @@ export interface HotspotPlan {
   providedIn: 'root'
 })
 export class ApiService {
-  private BASE_URL = 'http://127.0.0.1:8000/';
+  private BASE_URL = 'http://127.0.0.1:8000/api/';
 
   constructor(private http: HttpClient) {}
 
   // ============================
   // AUTH
   // ============================
-  // ============================
-// AUTH
-// ============================
+  checkAdminExists(): Observable<{ exists: boolean }> {
+    return this.http.get<{ exists: boolean }>(`${this.BASE_URL}auth/check-admin/`);
+  }
 
-// ✅ Check if an admin already exists
-checkAdminExists(): Observable<{ exists: boolean }> {
-  return this.http.get<{ exists: boolean }>(`${this.BASE_URL}api/auth/check-admin/`);
-}
+  registerAdmin(username: string, password: string): Observable<any> {
+    return this.http.post(`${this.BASE_URL}auth/register-admin/`, { username, password });
+  }
 
-// ✅ Register the first admin account (only if none exists)
-registerAdmin(username: string, password: string): Observable<any> {
-  return this.http.post(`${this.BASE_URL}api/auth/register-admin/`, { username, password });
-}
+  completeProfile(payload: FormData) {
+    return this.http.post(`${this.BASE_URL}auth/complete-profile/`, payload);
+  }
 
-completeProfile(payload: FormData) {
-  return this.http.post(`${this.BASE_URL}api/auth/complete-profile/`, payload);
-}
-
-
-login(username: string, password: string) {
-  return this.http.post(`${this.BASE_URL}api/auth/login/`, { username, password });
-}
-
+  login(username: string, password: string) {
+    return this.http.post(`${this.BASE_URL}auth/login/`, { username, password });
+  }
 
   // ============================
   // CUSTOMERS
   // ============================
- getActiveCustomers(): Observable<Customer[]> {
-  return this.http.get<Customer[]>(`${this.BASE_URL}/api/billing/customers/active/`);
-}
-
+  getActiveCustomers(): Observable<Customer[]> {
+    return this.http.get<Customer[]>(`${this.BASE_URL}billing/customers/active/`);
+  }
 
   getCustomerDetails(customerId: string): Observable<Customer> {
-    return this.http.get<Customer>(`${this.BASE_URL}api/customers/${customerId}/`);
-  }
-
-  fetchDeviceSessionDetails(mikrotikId: string, customerIp: string) {
-    return this.http.get(
-      `${this.BASE_URL}api/mikrotiks/${mikrotikId}/session/?ip=${encodeURIComponent(customerIp)}`
-    );
+    return this.http.get<Customer>(`${this.BASE_URL}billing/customers/${customerId}/`);
   }
 
   // ============================
-  // VOUCHERS
+  // MIKROTIK MANAGEMENT
   // ============================
-  getExpiringVouchers(): Observable<Voucher[]> {
-    return this.http.get<Voucher[]>(`${this.BASE_URL}api/vouchers/expiring/`);
-  }
-
-  createVoucher(payload: { amount: number; expiry: string; userId?: string }): Observable<Voucher> {
-    return this.http.post<Voucher>(`${this.BASE_URL}api/vouchers/`, payload);
-  }
-
-  // ============================
-  // HOTSPOT PLANS
-  // ============================
-
-
-  /** Create a new hotspot plan */
- /** List all hotspot plans */
-getHotspotPlans(): Observable<HotspotPlan[]> {
-  return this.http.get<HotspotPlan[]>(`${this.BASE_URL}api/packages/hotspot-plans/`);
-}
-
-/** Create a new hotspot plan */
-createHotspotPlan(plan: Partial<HotspotPlan>): Observable<HotspotPlan> {
-  return this.http.post<HotspotPlan>(`${this.BASE_URL}api/packages/hotspot-plans/`, plan);
-}
-
-/** Recharge an existing hotspot plan */
-rechargePlan(planId: string, amount: number): Observable<any> {
-  return this.http.post(`${this.BASE_URL}api/packages/hotspot-plans/${planId}/recharge/`, { amount });
-}
-
-/** Create a trial user for a hotspot plan */
-createTrialUser(planId: string, days: number): Observable<any> {
-  return this.http.post(`${this.BASE_URL}api/packages/hotspot-plans/${planId}/trial/`, { days });
-}
-
-/** Toggle auto online/offline mode */
-toggleAutoConnect(planId: string, autoOn: boolean): Observable<any> {
-  return this.http.patch(`${this.BASE_URL}api/packages/hotspot-plans/${planId}/auto-connect/`, { autoOn });
-}
-
-
- // ============================
-// MIKROTIK MANAGEMENT
-// ============================
-listMikrotiks(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BASE_URL}api/mikrotiks/`);
+  listMikrotiks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_URL}mikrotiks/`);
   }
 
   addMikrotik(payload: { host: string; username: string; password: string; port?: number }) {
-    return this.http.post(`${this.BASE_URL}api/mikrotiks/`, payload);
-  }
-
-  resetMikrotik(id: string): Observable<any> {
-    return this.http.post(`${this.BASE_URL}api/mikrotiks/${id}/reset/`, {});
+    return this.http.post(`${this.BASE_URL}mikrotiks/`, payload);
   }
 
   removeMikrotik(id: string): Observable<any> {
-    return this.http.delete(`${this.BASE_URL}api/mikrotiks/${id}/`);
+    return this.http.delete(`${this.BASE_URL}mikrotiks/${id}/`);
   }
 
   testMikrotik(id: string): Observable<{ ok: boolean; message?: string }> {
-    return this.http.get<{ ok: boolean; message?: string }>(
-      `${this.BASE_URL}api/mikrotiks/${id}/test/`
-    );
+    return this.http.get<{ ok: boolean; message?: string }>(`${this.BASE_URL}mikrotiks/${id}/test/`);
   }
 
+  resetMikrotik(id: string): Observable<any> {
+    return this.http.post(`${this.BASE_URL}mikrotiks/${id}/reset/`, {});
+  }
+
+  getMyRouters(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_URL}myrouters/`);
+  }
+
+  // ============================
+  // HOTSPOT PLANS / PACKAGES
+  // ============================
+  /** Fetch all plans (admin or public) */
+  getHotspotPlans(): Observable<HotspotPlan[]> {
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/`);
+  }
+
+  /** Create a new hotspot plan (admin) */
+  createHotspotPlan(plan: Partial<HotspotPlan>): Observable<HotspotPlan> {
+    return this.http.post<HotspotPlan>(`${this.BASE_URL}billing/plans/`, plan);
+  }
+
+  /** Admin-only: fetch plans created by this admin */
+  getAdminPlans(adminId: string): Observable<HotspotPlan[]> {
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/admin/${adminId}/`);
+  }
+
+  /** Subscriber: fetch plans available for their connected Mikrotik */
+  getPlansByMikrotik(mikrotikId: string): Observable<HotspotPlan[]> {
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/mikrotik/${mikrotikId}/`);
+  }
+
+  toggleAutoConnect(planId: string, auto_on: boolean): Observable<any> {
+    return this.http.patch(`${this.BASE_URL}billing/plans/${planId}/`, { auto_on });
+  }
+
+  // ============================
+  // USERS MANAGEMENT
+  // ============================
+  getMe(): Observable<any> {
+    return this.http.get(`${this.BASE_URL}auth/me/`);
+  }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_URL}auth/users/`);
+  }
+
+  getResellerCustomers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_URL}auth/reseller/customers/`);
+  }
+
+  createUser(payload: any): Observable<any> {
+    return this.http.post(`${this.BASE_URL}auth/users/create/`, payload);
+  }
+
+  updateUser(userId: string, payload: any): Observable<any> {
+    return this.http.patch(`${this.BASE_URL}auth/users/${userId}/`, payload);
+  }
+
+  deleteUser(userId: string): Observable<any> {
+    return this.http.delete(`${this.BASE_URL}auth/users/${userId}/`);
+  }
+
+  // ============================
+  // PAYMENTS
+  // ============================
+  mpesaStkPush(planId: string, phoneNumber: string): Observable<any> {
+    return this.http.post(`${this.BASE_URL}payments/stk-push/`, {
+      plan_id: planId,
+      phone: phoneNumber,
+    });
+  }
 
   // ============================
   // REPORTS
   // ============================
   getReports(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}api/reports/overview/`);
+    return this.http.get(`${this.BASE_URL}reports/overview/`);
   }
-
-  // ============================
-  // LEGACY ENDPOINTS
-  // ============================
-  getActiveUsers(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}users/active/`);
-  }
-
-  getPackages(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}packages/`);
-  }
-
-  getPerformance(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}/api/performance/`);
-  }
-
-  getSmsSubscriptions(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}sms/subscriptions/`);
-  }
-
-  // ============================
-  // PUBLIC PLANS & PURCHASE
-  // ============================
- getPublicPlans(): Observable<HotspotPlan[]> {
-  return this.http.get<HotspotPlan[]>(`${this.BASE_URL}api/packages/public-plans/`);
-}
-
-purchasePlan(planId: string, identifier: string): Observable<any> {
-  return this.http.post(`${this.BASE_URL}api/billing/public-purchase/`, { plan_id: planId, identifier });
-}
-
-
-// ============================
-// M-PESA PAYMENTS
-// ============================
-/**
- * Initiates an M-Pesa STK Push request for the given plan & phone number
- */
-mpesaStkPush(planId: string, phoneNumber: string): Observable<any> {
-  return this.http.post(`${this.BASE_URL}api/payments/stk-push/`, {
-    plan_id: planId,
-    phone: phoneNumber
-  });
-}
-
-
 }

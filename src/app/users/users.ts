@@ -9,30 +9,61 @@ import { ApiService, Customer } from '../../shared';
   templateUrl: './users.html',
   styleUrls: ['./users.css']
 })
-export class Users implements OnInit {
-  customers: Customer[] = [];
+export class UsersComponent implements OnInit {
+  users: any[] = [];
   loading = false;
   error: string | null = null;
+  currentUser: any = null;
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
-    this.fetchCustomers();
+    this.fetchCurrentUser();
   }
 
-  fetchCustomers(): void {
+  /** Get current logged-in user */
+  fetchCurrentUser(): void {
+    this.api.getMe().subscribe({
+      next: (user) => {
+        this.currentUser = user;
+        this.fetchUsers();
+      },
+      error: () => (this.error = 'Failed to load user info'),
+    });
+  }
+
+  /** Fetch users or customers based on role */
+  fetchUsers(): void {
     this.loading = true;
     this.error = null;
-    this.api.getActiveCustomers().subscribe({
-      next: (data) => {
-        this.customers = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching customers', err);
-        this.error = 'Failed to load customers';
-        this.loading = false;
-      }
-    });
+
+    if (this.currentUser?.is_superuser) {
+      // Admin: view all users
+      this.api.getAllUsers().subscribe({
+        next: (data) => {
+          this.users = data;
+          this.loading = false;
+        },
+        error: () => {
+          this.error = 'Failed to load users';
+          this.loading = false;
+        },
+      });
+    } else if (this.currentUser?.is_reseller) {
+      // Reseller: view their customers
+      this.api.getResellerCustomers().subscribe({
+        next: (data) => {
+          this.users = data;
+          this.loading = false;
+        },
+        error: () => {
+          this.error = 'Failed to load customers';
+          this.loading = false;
+        },
+      });
+    } else {
+      this.error = 'You do not have permission to view this page.';
+      this.loading = false;
+    }
   }
 }

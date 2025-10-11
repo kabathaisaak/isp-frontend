@@ -1,126 +1,49 @@
-<div class="min-h-screen w-full bg-gray-50 p-6">
-  <!-- Title -->
-  <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🔥 Hotspot Plans</h2>
+<!-- src/app/hotspot-plan/hotspot-plan.html -->
+<div class="min-h-screen bg-gray-50 py-10 px-6">
+  <div class="max-w-6xl mx-auto">
+    <!-- Title -->
+    <h1 class="text-4xl font-bold text-gray-800 mb-10 text-center">
+      🔥 Available Hotspot Plans
+    </h1>
 
-  <!-- Loading -->
-  <p *ngIf="loading" class="text-center text-gray-600 italic">Loading plans...</p>
-
-  <!-- Plans Grid -->
-  <div *ngIf="!isCreating && !loading" 
-       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <div *ngFor="let plan of plans" 
-         class="bg-white border border-gray-200 rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition duration-300">
-      
-      <!-- Plan Name -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-2">
-        <span *ngIf="plan.name; else noName">{{ plan.name }}</span>
-        <ng-template #noName>
-          <span class="italic text-gray-500 bg-gray-100 px-3 py-1 rounded-md">Unnamed Plan</span>
-        </ng-template>
-      </h3>
-
-      <!-- Price -->
-      <p class="text-xl font-bold mb-2"
-         [ngClass]="plan.price ? 'text-emerald-600' : 'text-gray-400 bg-gray-100 px-3 py-1 rounded-md italic'">
-        {{ plan.price ? (plan.price + ' KES') : 'No Price Set' }}
-      </p>
-
-      <!-- Trial Days -->
-      <p class="text-sm mb-1"
-         [ngClass]="plan.trialDays ? 'text-gray-500' : 'text-gray-400 bg-gray-100 px-3 py-1 rounded-md italic'">
-        {{ plan.trialDays ? (plan.trialDays + ' trial days') : 'No Trial Days' }}
-      </p>
-
-      <!-- Badges -->
-      <p *ngIf="plan.autoOn" 
-         class="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full mb-1">
-         ⚡ Auto On/Off Enabled
-      </p>
-      <p *ngIf="plan.purchasersCount" 
-         class="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded-full mb-4">
-         👥 {{ plan.purchasersCount }} users
-      </p>
-
-      <!-- Recharge Button -->
-      <button (click)="recharge(plan)" 
-              class="w-full bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium py-2 px-4 rounded-lg shadow-md transition">
-        Recharge
-      </button>
+    <!-- Loader -->
+    <div *ngIf="loading" class="text-center text-gray-600 italic">
+      Loading plans...
     </div>
-  </div>
 
-  <!-- No Plans Found -->
-  <div *ngIf="!isCreating && !loading && plans.length === 0" 
-       class="text-center text-gray-600 mt-6 italic">
-    ❌ No plans found.
-  </div>
+    <!-- Plans Grid -->
+    <div *ngIf="!loading && plans.length > 0"
+         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div *ngFor="let plan of plans"
+           class="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 border border-gray-200">
+        <h2 class="text-2xl font-semibold text-indigo-600 mb-2">{{ plan.name }}</h2>
+        <p class="text-gray-700 mb-3">
+          <span class="font-bold text-emerald-600">{{ plan.price }} KES</span>
+        </p>
+        <p class="text-gray-500 mb-3">
+          Trial: <span class="font-medium">{{ plan.trial_days }} days</span>
+        </p>
 
-  <!-- Create Plan Button -->
-  <div *ngIf="!isCreating && !loading" class="mt-8 text-center">
-    <button (click)="isCreating = true" 
-            class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
-      + Create New Plan
-    </button>
-  </div>
+        <div *ngIf="plan.auto_on"
+             class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-full inline-block mb-3">
+          ⚡ Auto Connect Enabled
+        </div>
 
-  <!-- Create Plan Form -->
-  <div *ngIf="isCreating" 
-       class="mt-10 max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-    <h3 class="text-xl font-bold text-gray-800 mb-4">➕ Create New Plan</h3>
+        <div *ngIf="plan.purchasers_count"
+             class="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded-full inline-block mb-3">
+          👥 {{ plan.purchasers_count }} users
+        </div>
 
-    <form (ngSubmit)="createPlan()" #planForm="ngForm" class="space-y-4">
-      <!-- Plan Name -->
-      <input [(ngModel)]="newPlan.name" name="name" placeholder="Plan Name" required
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400" />
-
-      <!-- Plan Price -->
-<div>
-  <label for="price" class="block text-gray-700 font-medium mb-1">Plan Price (KES)</label>
-  <input [(ngModel)]="newPlan.price" 
-         name="price" 
-         id="price"
-         type="number" 
-         placeholder="Enter price" 
-         required
-         class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                focus:ring-2 focus:ring-indigo-500 
-                focus:border-indigo-500 outline-none transition 
-                placeholder-gray-400" />
-</div>
-
-<!-- Trial Days -->
-<div>
-  <label for="trialDays" class="block text-gray-700 font-medium mb-1">Trial Days</label>
-  <input [(ngModel)]="newPlan.trialDays" 
-         name="trialDays" 
-         id="trialDays"
-         type="number" 
-         placeholder="Enter trial days" 
-         class="w-full border border-gray-300 rounded-lg px-4 py-2 
-                focus:ring-2 focus:ring-indigo-500 
-                focus:border-indigo-500 outline-none transition 
-                placeholder-gray-400" />
-</div>
-
-
-      <!-- Checkbox -->
-      <label class="flex items-center space-x-2 text-gray-700">
-        <input type="checkbox" [(ngModel)]="newPlan.autoOn" name="autoOn"
-               class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
-        <span>Auto Online/Offline Connect</span>
-      </label>
-
-      <!-- Actions -->
-      <div class="flex justify-between mt-6">
-        <button type="button" (click)="isCreating = false"
-                class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-          Cancel
-        </button>
-        <button type="submit" [disabled]="planForm.invalid"
-                class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed">
-          Save Plan
+        <button (click)="recharge(plan)"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition">
+          Recharge
         </button>
       </div>
-    </form>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && plans.length === 0" class="text-center mt-10 text-gray-500 italic">
+      ❌ No available plans found.
+    </div>
   </div>
 </div>
