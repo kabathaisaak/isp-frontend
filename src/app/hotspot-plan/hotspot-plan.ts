@@ -15,12 +15,12 @@ export class HotspotPlanComponent implements OnInit {
   newPlan: Partial<HotspotPlan> = {
     name: '',
     price: 0,
-    trialDays: 0,
-    autoOn: false
   };
 
   isCreating = false;
   loading = false;
+  phoneNumber: string = ''; // for recharge input
+  recharging: Record<string, boolean> = {}; // track per-plan recharge states
 
   constructor(private api: ApiService) {}
 
@@ -28,6 +28,9 @@ export class HotspotPlanComponent implements OnInit {
     this.fetchPlans();
   }
 
+  // ===============================
+  // FETCH PLANS
+  // ===============================
   fetchPlans() {
     this.loading = true;
     this.api.getHotspotPlans().subscribe({
@@ -38,37 +41,60 @@ export class HotspotPlanComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching plans', err);
         this.loading = false;
-      }
+      },
     });
   }
 
+  // ===============================
+  // CREATE NEW PLAN
+  // ===============================
   createPlan() {
+    if (!this.newPlan.name || !this.newPlan.price) {
+      alert('Please enter a plan name and price.');
+      return;
+    }
+
     this.api.createHotspotPlan(this.newPlan).subscribe({
       next: (plan) => {
         this.plans.push(plan);
         this.isCreating = false;
         this.resetForm();
       },
-      error: (err) => console.error('Error creating plan', err)
+      error: (err) => console.error('Error creating plan', err),
     });
   }
 
-  recharge(plan: HotspotPlan) {
-    const amount = prompt(`Enter recharge amount for plan "${plan.name}":`);
-    if (!amount) return;
-
-    this.api.rechargePlan(plan.id, Number(amount)).subscribe({
-      next: () => alert('Plan recharged successfully!'),
-      error: (err) => console.error('Recharge failed', err)
-    });
-  }
-
+  // ===============================
+  // RESET FORM
+  // ===============================
   resetForm() {
     this.newPlan = {
       name: '',
       price: 0,
-      trialDays: 0,
-      autoOn: false
     };
+  }
+
+  // ===============================
+  // RECHARGE VIA MPESA
+  // ===============================
+  recharge(plan: HotspotPlan) {
+    if (!this.phoneNumber) {
+      alert('Please enter your M-Pesa phone number.');
+      return;
+    }
+
+    this.recharging[plan.id] = true;
+
+    this.api.mpesaStkPush(plan.id, this.phoneNumber).subscribe({
+      next: (res) => {
+        this.recharging[plan.id] = false;
+        alert('M-Pesa prompt sent successfully! Check your phone to complete payment.');
+      },
+      error: (err) => {
+        this.recharging[plan.id] = false;
+        console.error('Recharge failed:', err);
+        alert('Failed to initiate payment. Please try again.');
+      },
+    });
   }
 }

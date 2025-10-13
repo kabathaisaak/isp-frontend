@@ -36,6 +36,12 @@ export class RegisterComponent implements OnInit {
 
   constructor(private api: ApiService, private router: Router) {}
 
+
+    goToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
+
   ngOnInit() {
     this.api.checkAdminExists().subscribe({
       next: (res) => {

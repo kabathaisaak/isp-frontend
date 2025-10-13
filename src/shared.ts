@@ -172,4 +172,8 @@ export class ApiService {
   getReports(): Observable<any> {
     return this.http.get(`${this.BASE_URL}reports/overview/`);
   }
+
+  getPerformance(): Observable<any> {
+  return this.http.get(`${this.BASE_URL}dashboard/performance/`);
+}
 }

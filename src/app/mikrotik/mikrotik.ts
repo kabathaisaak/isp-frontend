@@ -6,11 +6,12 @@ import { ApiService } from '../../shared';
 interface MikrotikDevice {
   id: string;
   host: string;
-  username?: string;
-  password?: string;
+  username: string;   // remove '?'
+  password: string;   // remove '?'
   port?: number;
   connected?: boolean;
 }
+
 
 @Component({
   selector: 'app-mikrotik',

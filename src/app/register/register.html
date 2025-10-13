@@ -201,14 +201,14 @@
     <div *ngIf="step === 3" class="text-center">
       <div class="text-green-600 text-lg font-semibold mb-4">
         {{ successMsg }}
-      </div>
-      <button
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition"
-        (click)="router.navigate(['/dashboard'])"
-      >
-        Go to Dashboard
-      </button>
-    </div>
+    <button
+  type="button"
+  (click)="goToDashboard()"
+  class="w-full bg-indigo-500 text-white font-semibold py-2 rounded-lg hover:bg-indigo-600"
+>
+  Go to Dashboard
+</button>
+
 
     <!-- Error Message -->
     <div *ngIf="errorMsg" class="text-red-500 text-sm text-center mt-4 font-medium">

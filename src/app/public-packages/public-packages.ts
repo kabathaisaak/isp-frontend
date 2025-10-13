@@ -8,10 +8,10 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './public-packages.html',
-  styleUrl: './public-packages.css',
+  styleUrls: ['./public-packages.css'], // ✅ fixed plural name
 })
 export class PackagesComponent implements OnInit {
-  packages: any[] = [];
+  packages: HotspotPlan[] = [];
   loading = false;
   error: string | null = null;
   user: any = null;
@@ -22,7 +22,7 @@ export class PackagesComponent implements OnInit {
     this.fetchUser();
   }
 
-  /** Fetch logged-in user info and packages */
+  /** ✅ Step 1: Fetch logged-in user info */
   fetchUser(): void {
     this.api.getMe().subscribe({
       next: (userData) => {
@@ -33,17 +33,26 @@ export class PackagesComponent implements OnInit {
     });
   }
 
+  /** ✅ Step 2: Fetch packages based on role */
   fetchPackages(): void {
     this.loading = true;
     this.error = null;
 
-    // Admin → see all, Reseller → own, Customer → local Mikrotik only
     let endpoint = '';
-    if (this.user?.is_superuser) endpoint = 'plans/all/';
-    else if (this.user?.is_reseller) endpoint = 'plans/my/';
-    else if (this.user?.is_customer) endpoint = 'plans/available/';
 
-    this.api.getPackages(endpoint).subscribe({
+    if (this.user?.is_superuser) {
+      endpoint = 'plans/all/';
+    } else if (this.user?.is_reseller) {
+      endpoint = 'plans/my/';
+    } else if (this.user?.is_customer) {
+      endpoint = 'plans/available/';
+    } else {
+      this.error = 'User role not recognized';
+      this.loading = false;
+      return;
+    }
+
+    this.api.getHotspotPlans().subscribe({
       next: (data) => {
         this.packages = data;
         this.loading = false;
