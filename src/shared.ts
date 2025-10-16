@@ -115,6 +115,12 @@ export class ApiService {
     return this.http.post<HotspotPlan>(`${this.BASE_URL}billing/plans/`, plan);
   }
 
+ getPublicPlans() {
+  return this.http.get<HotspotPlan[]>(`${this.BASE_URL}packages/public-plans/`);
+}
+
+
+
   /** Admin-only: fetch plans created by this admin */
   getAdminPlans(adminId: string): Observable<HotspotPlan[]> {
     return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/admin/${adminId}/`);

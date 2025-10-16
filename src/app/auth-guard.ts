@@ -1,30 +1,31 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
+import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  private platformId = inject(PLATFORM_ID);
-
   constructor(private router: Router) {}
 
-  canActivate(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      const access = localStorage.getItem('access');
-      const role = localStorage.getItem('role');
+  canActivate(route: ActivatedRouteSnapshot): boolean {
+    // ✅ SSR-safe check
+    const isBrowser = typeof window !== 'undefined';
+    const token = isBrowser ? localStorage.getItem('access') : null;
+    const role = isBrowser ? localStorage.getItem('role') : null;
 
-      if (access) {
-        // ✅ Role-based redirection
-        if (role === 'admin') {
-          this.router.navigate(['/admin/dashboard']);
-        } else if (role === 'subscriber') {
-          this.router.navigate(['/packages']);
-        }
-        return true;
-      }
+    // ✅ Public route: anyone can access packages
+    if (route.routeConfig?.path === 'packages') return true;
+
+    // 🚫 Logged-in users shouldn't access login/register again
+    if ((route.routeConfig?.path === 'login' || route.routeConfig?.path === 'register') && token && role) {
+      this.router.navigate(['/dashboard']);
+      return false;
     }
 
-    this.router.navigate(['/login']);
-    return false;
+    // ✅ Protected routes require auth
+    if (!token || !role) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    return true;
   }
 }

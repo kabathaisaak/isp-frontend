@@ -1,27 +1,29 @@
 import { Routes } from '@angular/router';
 import { Dashboard } from './dashboard/dashboard';
+import { RegisterComponent } from './register/register';
 import { LoginComponent } from './login/login';
-// import { RegisterComponent } from './register/register';
 import { Billing } from './billing/billing';
 import { MikrotikComponent } from './mikrotik/mikrotik';
 import { HotspotPlanComponent } from './hotspot-plan/hotspot-plan';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { AuthGuard } from './auth-guard';
-
+import { PackagesComponent } from './public-packages/public-packages';
 
 export const routes: Routes = [
-  // 🔹 Public routes (no sidebar)
+  // 🔹 Public routes
   {
     path: '',
     component: AuthLayout,
     children: [
-      { path: 'login', component: LoginComponent },
-      { path: '', redirectTo: 'packages', pathMatch: 'full' }
-    ]
+      { path: 'packages', component: PackagesComponent, canActivate: [AuthGuard] }, // ✅ public
+      { path: 'login', component: LoginComponent, canActivate: [AuthGuard] }, // 🚫 logged-in users can't access
+      { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] }, // 🚫 logged-in users can't access
+      { path: '', redirectTo: 'packages', pathMatch: 'full' },
+    ],
   },
 
-  // 🔹 Protected admin routes (with sidebar, require login)
+  // 🔹 Protected routes
   {
     path: '',
     component: MainLayout,
@@ -30,9 +32,9 @@ export const routes: Routes = [
       { path: 'billing', component: Billing, canActivate: [AuthGuard] },
       { path: 'mikrotik', component: MikrotikComponent, canActivate: [AuthGuard] },
       { path: 'HotspotPlan', component: HotspotPlanComponent, canActivate: [AuthGuard] },
-    ]
+    ],
   },
 
-  // 🔹 Wildcard fallback
-  { path: '**', redirectTo: 'packages' }
+  // 🔹 Fallback
+  { path: '**', redirectTo: 'packages' },
 ];
