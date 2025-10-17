@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ApiService, HotspotPlan } from '../../shared';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,11 +15,19 @@ export class PackagesComponent implements OnInit {
   loading = false;
   error: string | null = null;
   user: any = null;
+  isBrowser: boolean;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, @Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
-    const token = localStorage.getItem('access');
+    let token: string | null = null;
+
+    if (this.isBrowser) {
+      token = localStorage.getItem('access');
+    }
+
     if (token) {
       this.fetchUser();
     } else {
