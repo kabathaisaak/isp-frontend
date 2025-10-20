@@ -11,30 +11,31 @@ import { AuthGuard } from './auth-guard';
 import { PackagesComponent } from './public-packages/public-packages';
 
 export const routes: Routes = [
-  // 🔹 Public routes
+  // Public routes
   {
     path: '',
     component: AuthLayout,
     children: [
-      { path: 'packages', component: PackagesComponent, canActivate: [AuthGuard] }, // ✅ public
-      { path: 'login', component: LoginComponent, canActivate: [AuthGuard] }, // 🚫 logged-in users can't access
-      { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] }, // 🚫 logged-in users can't access
+      { path: 'packages', component: PackagesComponent },
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent },
       { path: '', redirectTo: 'packages', pathMatch: 'full' },
     ],
   },
 
-  // 🔹 Protected routes
+  // Protected routes
   {
     path: '',
     component: MainLayout,
+    canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: Dashboard, canActivate: [AuthGuard] },
-      { path: 'billing', component: Billing, canActivate: [AuthGuard] },
-      { path: 'mikrotik', component: MikrotikComponent, canActivate: [AuthGuard] },
-      { path: 'HotspotPlan', component: HotspotPlanComponent, canActivate: [AuthGuard] },
+      { path: 'dashboard', component: Dashboard },
+      { path: 'billing', component: Billing },
+      { path: 'mikrotik', component: MikrotikComponent },
+      { path: 'hotspot-plan', component: HotspotPlanComponent },
     ],
   },
 
-  // 🔹 Fallback
+  // Fallback
   { path: '**', redirectTo: 'packages' },
 ];
