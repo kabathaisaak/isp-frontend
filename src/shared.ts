@@ -45,6 +45,17 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
+  // ✅ Attach token for authenticated requests
+  private getAuthHeaders() {
+    const token = localStorage.getItem('access');
+    return {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }
+    };
+  }
+
   // ============================
   // AUTH
   // ============================
@@ -68,98 +79,92 @@ export class ApiService {
   // CUSTOMERS
   // ============================
   getActiveCustomers(): Observable<Customer[]> {
-    return this.http.get<Customer[]>(`${this.BASE_URL}billing/customers/active/`);
+    return this.http.get<Customer[]>(`${this.BASE_URL}billing/customers/active/`, this.getAuthHeaders());
   }
 
   getCustomerDetails(customerId: string): Observable<Customer> {
-    return this.http.get<Customer>(`${this.BASE_URL}billing/customers/${customerId}/`);
+    return this.http.get<Customer>(`${this.BASE_URL}billing/customers/${customerId}/`, this.getAuthHeaders());
   }
 
   // ============================
   // MIKROTIK MANAGEMENT
   // ============================
   listMikrotiks(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BASE_URL}mikrotiks/`);
+    return this.http.get<any[]>(`${this.BASE_URL}mikrotiks/`, this.getAuthHeaders());
   }
 
   addMikrotik(payload: { host: string; username: string; password: string; port?: number }) {
-    return this.http.post(`${this.BASE_URL}mikrotiks/`, payload);
+    return this.http.post(`${this.BASE_URL}mikrotiks/`, payload, this.getAuthHeaders());
   }
 
   removeMikrotik(id: string): Observable<any> {
-    return this.http.delete(`${this.BASE_URL}mikrotiks/${id}/`);
+    return this.http.delete(`${this.BASE_URL}mikrotiks/${id}/`, this.getAuthHeaders());
   }
 
   testMikrotik(id: string): Observable<{ ok: boolean; message?: string }> {
-    return this.http.get<{ ok: boolean; message?: string }>(`${this.BASE_URL}mikrotiks/${id}/test/`);
+    return this.http.get<{ ok: boolean; message?: string }>(`${this.BASE_URL}mikrotiks/${id}/test/`, this.getAuthHeaders());
   }
 
   resetMikrotik(id: string): Observable<any> {
-    return this.http.post(`${this.BASE_URL}mikrotiks/${id}/reset/`, {});
+    return this.http.post(`${this.BASE_URL}mikrotiks/${id}/reset/`, {}, this.getAuthHeaders());
   }
 
   getMyRouters(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BASE_URL}myrouters/`);
+    return this.http.get<any[]>(`${this.BASE_URL}myrouters/`, this.getAuthHeaders());
   }
 
   // ============================
   // HOTSPOT PLANS / PACKAGES
   // ============================
-  /** Fetch all plans (admin or public) */
   getHotspotPlans(): Observable<HotspotPlan[]> {
-    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/`);
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/`, this.getAuthHeaders());
   }
 
-  /** Create a new hotspot plan (admin) */
   createHotspotPlan(plan: Partial<HotspotPlan>): Observable<HotspotPlan> {
-    return this.http.post<HotspotPlan>(`${this.BASE_URL}billing/plans/`, plan);
+    return this.http.post<HotspotPlan>(`${this.BASE_URL}billing/plans/`, plan, this.getAuthHeaders());
   }
 
- getPublicPlans() {
-  return this.http.get<HotspotPlan[]>(`${this.BASE_URL}packages/public-plans/`);
-}
+  getPublicPlans() {
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}packages/public-plans/`);
+  }
 
-
-
-  /** Admin-only: fetch plans created by this admin */
   getAdminPlans(adminId: string): Observable<HotspotPlan[]> {
-    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/admin/${adminId}/`);
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/admin/${adminId}/`, this.getAuthHeaders());
   }
 
-  /** Subscriber: fetch plans available for their connected Mikrotik */
   getPlansByMikrotik(mikrotikId: string): Observable<HotspotPlan[]> {
-    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/mikrotik/${mikrotikId}/`);
+    return this.http.get<HotspotPlan[]>(`${this.BASE_URL}billing/plans/mikrotik/${mikrotikId}/`, this.getAuthHeaders());
   }
 
   toggleAutoConnect(planId: string, auto_on: boolean): Observable<any> {
-    return this.http.patch(`${this.BASE_URL}billing/plans/${planId}/`, { auto_on });
+    return this.http.patch(`${this.BASE_URL}billing/plans/${planId}/`, { auto_on }, this.getAuthHeaders());
   }
 
   // ============================
   // USERS MANAGEMENT
   // ============================
   getMe(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}auth/me/`);
+    return this.http.get(`${this.BASE_URL}auth/me/`, this.getAuthHeaders());
   }
 
   getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BASE_URL}auth/users/`);
+    return this.http.get<any[]>(`${this.BASE_URL}auth/users/`, this.getAuthHeaders());
   }
 
   getResellerCustomers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BASE_URL}auth/reseller/customers/`);
+    return this.http.get<any[]>(`${this.BASE_URL}auth/reseller/customers/`, this.getAuthHeaders());
   }
 
   createUser(payload: any): Observable<any> {
-    return this.http.post(`${this.BASE_URL}auth/users/create/`, payload);
+    return this.http.post(`${this.BASE_URL}auth/users/create/`, payload, this.getAuthHeaders());
   }
 
   updateUser(userId: string, payload: any): Observable<any> {
-    return this.http.patch(`${this.BASE_URL}auth/users/${userId}/`, payload);
+    return this.http.patch(`${this.BASE_URL}auth/users/${userId}/`, payload, this.getAuthHeaders());
   }
 
   deleteUser(userId: string): Observable<any> {
-    return this.http.delete(`${this.BASE_URL}auth/users/${userId}/`);
+    return this.http.delete(`${this.BASE_URL}auth/users/${userId}/`, this.getAuthHeaders());
   }
 
   // ============================
@@ -169,17 +174,55 @@ export class ApiService {
     return this.http.post(`${this.BASE_URL}payments/stk-push/`, {
       plan_id: planId,
       phone: phoneNumber,
-    });
+    }, this.getAuthHeaders());
   }
 
   // ============================
-  // REPORTS
+  // REPORTS & PERFORMANCE
   // ============================
   getReports(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}reports/overview/`);
+    return this.http.get(`${this.BASE_URL}reports/overview/`, this.getAuthHeaders());
   }
 
   getPerformance(): Observable<any> {
-  return this.http.get(`${this.BASE_URL}dashboard/performance/`);
-}
+    return this.http.get(`${this.BASE_URL}dashboard/performance/`, this.getAuthHeaders());
+  }
+
+  // ============================
+  // ADMIN PACKAGES CRUD
+  // ============================
+  getAdminPackages() {
+    return this.http.get<any[]>(`${this.BASE_URL}auth/admin/packages/`, this.getAuthHeaders());
+  }
+
+  createAdminPackage(payload: any) {
+    return this.http.post(`${this.BASE_URL}auth/admin/packages/`, payload, this.getAuthHeaders());
+  }
+
+  updateAdminPackage(id: string, payload: any) {
+    return this.http.patch(`${this.BASE_URL}auth/admin/packages/${id}/`, payload, this.getAuthHeaders());
+  }
+
+  deleteAdminPackage(id: string) {
+    return this.http.delete(`${this.BASE_URL}auth/admin/packages/${id}/`, this.getAuthHeaders());
+  }
+
+  // ============================
+  // ADMIN MIKROTIK CRUD
+  // ============================
+  getMyMikrotiks() {
+    return this.http.get<any[]>(`${this.BASE_URL}auth/admin/mikrotiks/`, this.getAuthHeaders());
+  }
+
+  createMikrotik(payload: any) {
+    return this.http.post(`${this.BASE_URL}auth/admin/mikrotiks/`, payload, this.getAuthHeaders());
+  }
+
+  updateMikrotik(id: string, payload: any) {
+    return this.http.patch(`${this.BASE_URL}auth/admin/mikrotiks/${id}/`, payload, this.getAuthHeaders());
+  }
+
+  deleteMikrotik(id: string) {
+    return this.http.delete(`${this.BASE_URL}auth/admin/mikrotiks/${id}/`, this.getAuthHeaders());
+  }
 }
