@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../../shared';
+import { PLATFORM_ID, Inject } from '@angular/core';
 
 interface LoginResponse {
   access?: string;
@@ -23,33 +24,68 @@ interface LoginResponse {
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   username = '';
   password = '';
   errorMsg = '';
   loading = false;
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-  onLogin() {
-    if (!this.username || !this.password) return;
-    this.loading = true;
+  ngOnInit() {
+    // ✅ Ensure this only runs in the browser
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('access');
+      const role = localStorage.getItem('role');
 
-    this.api.login(this.username, this.password).subscribe({
-      next: (res: LoginResponse) => {
-        this.loading = false;
+      if (token && role) {
+        // 🔹 Auto-redirect if user is already logged in
+        switch (role) {
+          case 'admin':
+            this.router.navigate(['/dashboard']);
+            break;
+          case 'reseller':
+            this.router.navigate(['/reseller-dashboard']);
+            break;
+          case 'subscriber':
+            this.router.navigate(['/packages']);
+            break;
+          default:
+            this.router.navigate(['/dashboard']);
+        }
+      }
+    }
+  }
 
-        if (res.access && res.user) {
+onLogin() {
+  if (!this.username || !this.password) return;
+  this.loading = true;
+
+  this.api.login(this.username, this.password).subscribe({
+    next: (res: LoginResponse) => {
+      this.loading = false;
+
+      if (res.access && res.user) {
+        if (isPlatformBrowser(this.platformId)) {
           // ✅ Save tokens & user info in localStorage
           localStorage.setItem('access', res.access);
           if (res.refresh) localStorage.setItem('refresh', res.refresh);
           localStorage.setItem('username', res.user.username);
-          if (res.user.role) localStorage.setItem('role', res.user.role);
+
+          // ✅ Store role correctly from top level
+          if ((res as any).role) {
+            localStorage.setItem('role', (res as any).role);
+          }
 
           this.errorMsg = '';
 
-          // ✅ Redirect based on role
-          switch (res.user.role) {
+          // ✅ Role-based redirect
+          const role = (res as any).role;
+          switch (role) {
             case 'admin':
               this.router.navigate(['/dashboard']);
               break;
@@ -62,17 +98,19 @@ export class LoginComponent {
             default:
               this.router.navigate(['/dashboard']);
           }
-        } else {
-          this.errorMsg = res.error || 'Invalid login response';
         }
-      },
-      error: (err: any) => {
-        this.loading = false;
-        console.error('Login failed:', err);
-        this.errorMsg = 'Invalid username or password.';
+      } else {
+        this.errorMsg = res.error || 'Invalid login response';
       }
-    });
-  }
+    },
+    error: (err: any) => {
+      this.loading = false;
+      console.error('Login failed:', err);
+      this.errorMsg = 'Invalid username or password.';
+    }
+  });
+}
+
 
   onRegister() {
     this.router.navigate(['/Register']);
