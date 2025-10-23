@@ -1,13 +1,14 @@
-// src/app/dashboard/dashboard.ts
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../shared';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { Router } from '@angular/router';
+import { ApiService } from '../../shared';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ CommonModule, NgIf, NgFor ],
+  imports: [CommonModule, NgIf, NgFor],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -21,93 +22,138 @@ export class Dashboard implements OnInit {
 
   constructor(private apiService: ApiService, private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.username = localStorage.getItem('username');
     this.loadDashboard();
   }
 
-  loadDashboard() {
+  /**
+   * Load all dashboard data concurrently
+   */
+  loadDashboard(): void {
     this.loading = true;
+    let authErrorCount = 0;
 
-    // performance
-    this.apiService.getPerformance().subscribe({
-      next: (data) => this.performance = data,
-      error: (err) => console.error('Performance error', err)
-    });
+    forkJoin({
+      performance: this.apiService.getPerformance().pipe(
+        catchError((err) => {
+          if (this.isAuthError(err)) authErrorCount++;
+          this.handleError(err, 'Performance');
+          return of({});
+        })
+      ),
+      packages: this.apiService.getAdminPackages().pipe(
+        catchError((err) => {
+          if (this.isAuthError(err)) authErrorCount++;
+          this.handleError(err, 'Packages');
+          return of([]);
+        })
+      ),
+      mikrotiks: this.apiService.getMyMikrotiks().pipe(
+        catchError((err) => {
+          if (this.isAuthError(err)) authErrorCount++;
+          this.handleError(err, 'Mikrotiks');
+          return of([]);
+        })
+      ),
+      users: this.apiService.getAllUsers().pipe(
+        catchError((err) => {
+          if (this.isAuthError(err)) authErrorCount++;
+          this.handleError(err, 'Users');
+          return of([]);
+        })
+      )
+    }).subscribe((result) => {
+      this.performance = result.performance;
+      this.packages = result.packages;
+      this.mikrotiks = result.mikrotiks;
+      this.users = result.users;
+      this.loading = false;
 
-    // packages (admin's)
-    this.apiService.getAdminPackages().subscribe({
-      next: (data: any) => this.packages = data,
-      error: (err) => console.error('Packages error', err)
-    });
-
-    // mikrotiks (owner)
-    this.apiService.getMyMikrotiks().subscribe({
-      next: (data: any) => this.mikrotiks = data,
-      error: (err) => console.error('Mikrotiks error', err)
-    });
-
-    // users
-    this.apiService.getAllUsers().subscribe({
-      next: (data: any) => {
-        this.users = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Users error', err);
-        this.loading = false;
+      // Logout only if *all* requests failed with auth errors
+      if (authErrorCount === 4) {
+        alert('Session expired or unauthorized. Please log in again.');
+        this.logout();
       }
     });
   }
 
-  // navigation to create pages
-  createPackage() {
-    this.router.navigate(['/billing/plans/create']); // implement route & component later
+  /**
+   * Helper: Detect authorization errors
+   */
+  private isAuthError(err: any): boolean {
+    return err?.status === 401 || err?.status === 403;
   }
-  editPackage(pkg: any) {
+
+  /**
+   * Generic error handler (non-auth errors just log)
+   */
+  private handleError(err: any, source: string): void {
+    console.error(`${source} error:`, err);
+  }
+
+  /**
+   * Package management actions
+   */
+  createPackage(): void {
+    this.router.navigate(['/billing/plans/create']);
+  }
+
+  editPackage(pkg: any): void {
     this.router.navigate([`/billing/plans/${pkg.id}/edit`]);
   }
-  deletePackage(pkg: any) {
+
+  deletePackage(pkg: any): void {
     if (!confirm(`Delete package "${pkg.name}"? This cannot be undone.`)) return;
     this.apiService.deleteAdminPackage(pkg.id).subscribe({
       next: () => {
         this.packages = this.packages.filter(p => p.id !== pkg.id);
       },
-      error: err => console.error('Delete package error', err)
+      error: (err) => this.handleError(err, 'Delete Package')
     });
   }
 
-  // mikrotik CRUD
-  createMikrotik() {
-    this.router.navigate(['/mikrotik/create']); // implement later
+  /**
+   * Mikrotik management actions
+   */
+  createMikrotik(): void {
+    this.router.navigate(['/mikrotik/create']);
   }
-  editMikrotik(m: any) {
+
+  editMikrotik(m: any): void {
     this.router.navigate([`/mikrotik/${m.id}/edit`]);
   }
-  deleteMikrotik(m: any) {
-    if (!confirm(`Delete mikrotik "${m.name}"?`)) return;
+
+  deleteMikrotik(m: any): void {
+    if (!confirm(`Delete Mikrotik "${m.name}"?`)) return;
     this.apiService.deleteMikrotik(m.id).subscribe({
-      next: () => this.mikrotiks = this.mikrotiks.filter(x => x.id !== m.id),
-      error: err => console.error('Delete mikrotik error', err)
+      next: () => {
+        this.mikrotiks = this.mikrotiks.filter(x => x.id !== m.id);
+      },
+      error: (err) => this.handleError(err, 'Delete Mikrotik')
     });
   }
 
-  // simple user activation toggle (admin-only)
-  toggleUserActive(user: any) {
+  /**
+   * User management: activate/deactivate user
+   */
+  toggleUserActive(user: any): void {
     const newStatus = !user.is_active;
     if (!confirm(`${newStatus ? 'Activate' : 'Deactivate'} ${user.username}?`)) return;
 
     this.apiService.updateUser(user.id, { is_active: newStatus }).subscribe({
       next: (updated) => {
-        // update local copy
         const idx = this.users.findIndex(u => u.id === user.id);
         if (idx > -1) this.users[idx] = { ...this.users[idx], ...updated };
       },
-      error: err => console.error('Toggle user active error', err)
+      error: (err) => this.handleError(err, 'Toggle User Active')
     });
   }
 
-  logout() {
+  /**
+   * Logout the user and clear local storage
+   */
+  logout(): void {
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
     localStorage.removeItem('username');
