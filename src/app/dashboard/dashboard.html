@@ -17,32 +17,56 @@
       <div *ngIf="loading" class="text-gray-500 text-lg">Loading...</div>
 
       <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <!-- Earnings -->
+        <div
+          class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
+          (click)="viewEarningsDetails()">
           <h2 class="text-lg font-semibold text-gray-700 mb-2">💰 This Month Earnings</h2>
           <p class="text-2xl font-bold text-emerald-600">{{ performance.earnings | currency }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <!-- SMS -->
+        <div
+          class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
+          (click)="viewSmsDetails()">
           <h2 class="text-lg font-semibold text-gray-700 mb-2">✉️ SMS Top-Up</h2>
           <p class="text-2xl font-bold text-indigo-600">{{ performance.smsCredits }} Credits</p>
         </div>
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <!-- Clients -->
+        <div
+          class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
+          (click)="viewClients()">
           <h2 class="text-lg font-semibold text-gray-700 mb-2">👥 Total Clients</h2>
           <p class="text-2xl font-bold text-blue-600">{{ performance.totalClients }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <!-- Active Users -->
+        <div
+          class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
+          (click)="viewUsers()">
           <h2 class="text-lg font-semibold text-gray-700 mb-2">🟢 Users Active</h2>
           <p class="text-2xl font-bold text-green-600">{{ performance.activeUsers }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <!-- Packages -->
+        <div
+          class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
+          (click)="viewPackages()">
           <h2 class="text-lg font-semibold text-gray-700 mb-2">📦 Total Packages</h2>
           <p class="text-2xl font-bold text-orange-600">{{ performance.totalPackages }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <!-- Mikrotiks -->
+        <div
+          class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
+          (click)="viewMikrotiks()">
           <h2 class="text-lg font-semibold text-gray-700 mb-2">🌐 PPPoE Management</h2>
           <p class="text-2xl font-bold text-purple-600">{{ performance.pppoeStatus }}</p>
         </div>
-      </div>
 
+      </div>
     </section>
   </main>
 </div>
