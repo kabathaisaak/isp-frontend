@@ -195,13 +195,14 @@ export class ApiService {
     return this.http.get<any[]>(`${this.BASE_URL}auth/admin/packages/`, this.getAuthHeaders());
   }
 
-  createAdminPackage(payload: any) {
-    return this.http.post(`${this.BASE_URL}auth/admin/packages/`, payload, this.getAuthHeaders());
-  }
+  createAdminPackage(payload: Partial<HotspotPlan>): Observable<HotspotPlan> {
+  return this.http.post<HotspotPlan>(`${this.BASE_URL}auth/admin/packages/`, payload, this.getAuthHeaders());
+}
 
-  updateAdminPackage(id: string, payload: any) {
-    return this.http.patch(`${this.BASE_URL}auth/admin/packages/${id}/`, payload, this.getAuthHeaders());
-  }
+updateAdminPackage(id: string, payload: Partial<HotspotPlan>): Observable<HotspotPlan> {
+  return this.http.patch<HotspotPlan>(`${this.BASE_URL}auth/admin/packages/${id}/`, payload, this.getAuthHeaders());
+}
+
 
   deleteAdminPackage(id: string) {
     return this.http.delete(`${this.BASE_URL}auth/admin/packages/${id}/`, this.getAuthHeaders());
@@ -225,4 +226,5 @@ export class ApiService {
   deleteMikrotik(id: string) {
     return this.http.delete(`${this.BASE_URL}auth/admin/mikrotiks/${id}/`, this.getAuthHeaders());
   }
+  
 }

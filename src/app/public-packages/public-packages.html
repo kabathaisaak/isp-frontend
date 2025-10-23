@@ -3,9 +3,7 @@
     class="max-w-7xl mx-auto bg-white/90 backdrop-blur shadow-xl rounded-3xl p-8 border border-gray-200"
   >
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-      <h2
-        class="text-3xl font-extrabold text-gray-800 tracking-tight flex items-center gap-2"
-      >
+      <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight flex items-center gap-2">
         💼 Available Packages
       </h2>
 
@@ -13,6 +11,16 @@
         Logged in as
         <span class="font-semibold text-indigo-600">{{ user.username }}</span>
       </div>
+    </div>
+
+    <!-- ➕ Add Package (Admin/Reseller Only) -->
+    <div *ngIf="user?.is_admin || user?.is_reseller" class="mb-6">
+      <button
+        (click)="openCreateForm()"
+        class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 shadow-md"
+      >
+        ➕ Add Package
+      </button>
     </div>
 
     <!-- 🔄 Loading -->
@@ -26,19 +34,8 @@
         fill="none"
         viewBox="0 0 24 24"
       >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v8z"
-        ></path>
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
       </svg>
       Loading packages...
     </div>
@@ -52,28 +49,20 @@
     </div>
 
     <!-- 📦 Package Cards -->
-    <div
-      *ngIf="!loading && packages.length > 0"
-      class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"
-    >
+    <div *ngIf="!loading && packages.length > 0" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
       <div
         *ngFor="let plan of packages"
         class="relative bg-gradient-to-br from-indigo-50 via-white to-white border border-gray-200 shadow-md rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out"
       >
         <div class="absolute top-3 right-3">
-          <span
-            class="bg-indigo-100 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full"
+          <span class="bg-indigo-100 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full"
             >{{ plan.trial_days }}d Trial</span
           >
         </div>
 
-        <h3 class="text-xl font-bold text-gray-800 mb-2">
-          {{ plan.name }}
-        </h3>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ plan.name }}</h3>
         <p class="text-gray-600 mb-3">
-          <span class="text-2xl font-extrabold text-indigo-600">
-            {{ plan.price }}
-          </span>
+          <span class="text-2xl font-extrabold text-indigo-600">{{ plan.price }}</span>
           <span class="text-sm text-gray-500 ml-1">KES / month</span>
         </p>
 
@@ -82,7 +71,7 @@
           <li>⏱ Trial: {{ plan.trial_days }} days</li>
         </ul>
 
-        <!-- Customer view -->
+        <!-- Customer -->
         <div *ngIf="user?.is_customer" class="text-right">
           <button
             class="bg-indigo-600 text-green-300 px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 active:scale-95 transition"
@@ -91,25 +80,88 @@
           </button>
         </div>
 
-        <!-- Reseller view -->
-        <div
-          *ngIf="user?.is_reseller"
-          class="text-sm text-gray-500 border-t pt-3 mt-4"
-        >
-          👥 Purchasers:
-          <span class="font-semibold text-indigo-600">{{
-            plan.purchasers_count
-          }}</span>
+        <!-- Admin/Reseller CRUD -->
+        <div *ngIf="user?.is_admin || user?.is_reseller" class="flex justify-between border-t pt-3 mt-4">
+          <button
+            (click)="openEditForm(plan)"
+            class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm"
+          >
+            ✏️ Edit
+          </button>
+          <button
+            (click)="deletePlan(plan)"
+            class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 text-sm"
+          >
+            🗑 Delete
+          </button>
         </div>
       </div>
     </div>
 
     <!-- 💤 Empty -->
-    <div
-      *ngIf="!loading && packages.length === 0"
-      class="text-center text-gray-500 italic py-10"
-    >
+    <div *ngIf="!loading && packages.length === 0" class="text-center text-gray-500 italic py-10">
       No packages available in your area.
+    </div>
+
+    <!-- ✍️ Modal: Create/Edit -->
+    <div
+      *ngIf="showForm"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    >
+      <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl relative">
+        <h3 class="text-xl font-bold mb-4 text-gray-800">
+          {{ editingPlan ? '✏️ Edit Package' : '➕ Add New Package' }}
+        </h3>
+
+        <form (ngSubmit)="savePackage()" #packageForm="ngForm" class="space-y-4">
+          <input
+            [(ngModel)]="formData.name"
+            name="name"
+            type="text"
+            placeholder="Package Name"
+            required
+            class="w-full p-2 border rounded-lg"
+          />
+
+          <input
+            [(ngModel)]="formData.price"
+            name="price"
+            type="number"
+            placeholder="Price (KES)"
+            required
+            class="w-full p-2 border rounded-lg"
+          />
+
+          <input
+            [(ngModel)]="formData.trial_days"
+            name="trial_days"
+            type="number"
+            placeholder="Trial Days"
+            class="w-full p-2 border rounded-lg"
+          />
+
+          <label class="flex items-center space-x-2">
+            <input [(ngModel)]="formData.auto_on" name="auto_on" type="checkbox" />
+            <span>Enable Auto ON</span>
+          </label>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              (click)="closeForm()"
+              class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+            >
+              {{ editingPlan ? 'Update' : 'Create' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
